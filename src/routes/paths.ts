@@ -11,6 +11,13 @@ export const ROUTES = {
   REPORTS: "/reports",
   JOURNEY: "/journey",
   PROFILE: "/profile",
+  ROUTE_RESULTS: "/routes",
+  ROUTE_DETAILS: "/routes/:routeId",
+  NOTIFICATIONS: "/notifications",
 } as const;
+
+export function routeDetailsPath(routeId: string) {
+  return `/routes/${routeId}`;
+}
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

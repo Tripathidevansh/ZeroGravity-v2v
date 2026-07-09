@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Menu, X, ShieldCheck } from "lucide-react";
+import { Menu, X, ShieldCheck, Bell } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { APP_NAME } from "@/utils/constants";
 import { Button } from "@/components/ui/Button";
 import type { NavItem } from "@/utils/constants";
 import { ROUTES } from "@/routes/paths";
+import { NOTIFICATIONS } from "@/features/notifications/mockData";
 
 export interface NavbarProps {
   navItems: NavItem[];
@@ -42,11 +43,23 @@ export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
 
         <div className="hidden items-center gap-3 md:flex">
           {isAuthenticated ? (
-            <Link to={ROUTES.PROFILE}>
-              <Button variant="outline" size="sm">
-                Profile
-              </Button>
-            </Link>
+            <>
+              <Link
+                to={ROUTES.NOTIFICATIONS}
+                className="relative rounded-[--radius-md] p-2 text-neutral-400 hover:bg-[--color-bg-surface-raised] hover:text-neutral-100"
+                aria-label="Notifications"
+              >
+                <Bell size={18} />
+                {NOTIFICATIONS.some((n) => !n.read) && (
+                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary-500" />
+                )}
+              </Link>
+              <Link to={ROUTES.PROFILE}>
+                <Button variant="outline" size="sm">
+                  Profile
+                </Button>
+              </Link>
+            </>
           ) : (
             <>
               <Link to={ROUTES.LOGIN}>
@@ -89,11 +102,19 @@ export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
           </nav>
           <div className="mt-4 flex flex-col gap-2">
             {isAuthenticated ? (
-              <Link to={ROUTES.PROFILE} onClick={() => setIsMobileOpen(false)}>
-                <Button variant="outline" className="w-full">
-                  Profile
-                </Button>
-              </Link>
+              <>
+                <Link to={ROUTES.NOTIFICATIONS} onClick={() => setIsMobileOpen(false)}>
+                  <Button variant="outline" className="w-full">
+                    <Bell size={16} />
+                    Notifications
+                  </Button>
+                </Link>
+                <Link to={ROUTES.PROFILE} onClick={() => setIsMobileOpen(false)}>
+                  <Button variant="outline" className="w-full">
+                    Profile
+                  </Button>
+                </Link>
+              </>
             ) : (
               <>
                 <Link to={ROUTES.LOGIN} onClick={() => setIsMobileOpen(false)}>

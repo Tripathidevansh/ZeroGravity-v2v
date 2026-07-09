@@ -9,6 +9,9 @@ import DashboardPage from "@/pages/dashboard/DashboardPage";
 import ReportsPage from "@/pages/reports/ReportsPage";
 import JourneyPage from "@/pages/journey/JourneyPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
+import RouteResultsPage from "@/pages/routes/RouteResultsPage";
+import RouteDetailsPage from "@/pages/routes/RouteDetailsPage";
+import NotificationsPage from "@/pages/notifications/NotificationsPage";
 import NotFoundPage from "@/pages/not-found/NotFoundPage";
 import { ROUTES } from "@/routes/paths";
 
@@ -36,6 +39,9 @@ export const router = createBrowserRouter([
       { path: ROUTES.REPORTS, element: <ReportsPage /> },
       { path: ROUTES.JOURNEY, element: <JourneyPage /> },
       { path: ROUTES.PROFILE, element: <ProfilePage /> },
+      { path: ROUTES.ROUTE_RESULTS, element: <RouteResultsPage /> },
+      { path: ROUTES.ROUTE_DETAILS, element: <RouteDetailsPage /> },
+      { path: ROUTES.NOTIFICATIONS, element: <NotificationsPage /> },
     ],
   },
   {
