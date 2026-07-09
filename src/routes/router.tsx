@@ -1,0 +1,45 @@
+import { createBrowserRouter } from "react-router-dom";
+import { PublicLayout } from "@/layouts/PublicLayout";
+import { AuthenticatedLayout } from "@/layouts/AuthenticatedLayout";
+import LandingPage from "@/pages/landing/LandingPage";
+import LoginPage from "@/pages/auth/LoginPage";
+import SignupPage from "@/pages/auth/SignupPage";
+import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
+import DashboardPage from "@/pages/dashboard/DashboardPage";
+import ReportsPage from "@/pages/reports/ReportsPage";
+import JourneyPage from "@/pages/journey/JourneyPage";
+import ProfilePage from "@/pages/profile/ProfilePage";
+import NotFoundPage from "@/pages/not-found/NotFoundPage";
+import { ROUTES } from "@/routes/paths";
+
+/**
+ * Route tree.
+ * Public routes (landing, auth) use PublicLayout.
+ * App routes (dashboard, reports, journey, profile) use AuthenticatedLayout.
+ * Phase 1: no route guards yet — auth-gating will be added once
+ * Supabase auth is wired up in a later phase.
+ */
+export const router = createBrowserRouter([
+  {
+    element: <PublicLayout />,
+    children: [
+      { path: ROUTES.HOME, element: <LandingPage /> },
+      { path: ROUTES.LOGIN, element: <LoginPage /> },
+      { path: ROUTES.SIGNUP, element: <SignupPage /> },
+      { path: ROUTES.FORGOT_PASSWORD, element: <ForgotPasswordPage /> },
+    ],
+  },
+  {
+    element: <AuthenticatedLayout />,
+    children: [
+      { path: ROUTES.DASHBOARD, element: <DashboardPage /> },
+      { path: ROUTES.REPORTS, element: <ReportsPage /> },
+      { path: ROUTES.JOURNEY, element: <JourneyPage /> },
+      { path: ROUTES.PROFILE, element: <ProfilePage /> },
+    ],
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
+  },
+]);
