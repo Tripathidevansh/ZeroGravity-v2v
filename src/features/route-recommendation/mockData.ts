@@ -1,6 +1,10 @@
 import type { SavedLocation } from "@/features/destination-search/types";
 import type { RouteOption } from "@/features/route-recommendation/types";
 import type { MapRoutePoint } from "@/components/shared/MapView";
+import { computeRouteWSI, distanceKm, type WSIReportInput, type WSIInfrastructureInput } from "@/services/wsiEngine";
+import { REPORT_CATEGORY_LABEL } from "@/features/community-reports/types";
+import type { CommunityReport } from "@/features/community-reports/types";
+import type { InfrastructurePoint } from "@/services/infrastructureService";
 
 // Default "current location" used as the journey origin across the demo —
 // JIIT, Sector 62, Noida.
@@ -36,57 +40,64 @@ function buildPath(origin: MapRoutePoint, destination: MapRoutePoint, jitter: nu
   return points;
 }
 
-const HIGHLIGHT_POOL = {
-  positive: [
-    "Well-lit main road throughout",
-    "Passes 2 active police checkpoints",
-    "Busy commercial stretch, high footfall",
-    "CCTV coverage on most of the route",
-    "Wide footpaths, low traffic speed",
-  ],
-  negative: [
-    "Stretch with limited street lighting",
-    "Isolated road for ~1.2 km",
-    "Under-construction section, low visibility",
-    "Recent reports of suspicious activity",
-    "Sparse footfall after 9 PM",
-  ],
-};
+const GENERIC_POSITIVE_HIGHLIGHTS = [
+  "Well-lit main road for most of the route",
+  "Passes verified police or hospital checkpoints",
+  "Busy, high-footfall stretch",
+];
 
-function pick<T>(pool: T[], rand: () => number, count: number): T[] {
-  const shuffled = [...pool].sort(() => rand() - 0.5);
-  return shuffled.slice(0, count);
+const REPORT_RADIUS_KM = 1.5;
+
+/** Reports whose location falls within range of any point on the path. */
+function reportsAlongPath(path: MapRoutePoint[], reports: CommunityReport[]): CommunityReport[] {
+  return reports.filter((report) => {
+    if (report.lat === undefined || report.lng === undefined) return false;
+    return path.some((point) => distanceKm(point, { lat: report.lat!, lng: report.lng! }) <= REPORT_RADIUS_KM);
+  });
 }
 
 /**
- * Generates 3 deterministic mock routes for a destination — same
- * destination always yields the same routes, so the demo feels stable
- * across refreshes rather than random every time.
+ * Generates 3 candidate routes for a destination and scores each with the
+ * real WSI engine against live community reports + infrastructure. Route
+ * shapes (path jitter) are deterministically seeded per destination so the
+ * same search always returns the same 3 route geometries — but the safety
+ * scores themselves are fully dynamic, recalculated from current data every
+ * time this is called.
  */
-export function generateRoutes(destination: SavedLocation, origin: MapRoutePoint = DEFAULT_ORIGIN): RouteOption[] {
+export function generateRoutes(
+  destination: SavedLocation,
+  reports: CommunityReport[],
+  infrastructure: InfrastructurePoint[],
+  origin: MapRoutePoint = DEFAULT_ORIGIN
+): RouteOption[] {
   const baseSeed = hashSeed(destination.id);
 
   const templates = [
-    { label: "Route A", durationBase: 14, distanceBase: 7.2, wsiBase: 91 },
-    { label: "Route B", durationBase: 16, distanceBase: 6.8, wsiBase: 74 },
-    { label: "Route C", durationBase: 13, distanceBase: 6.4, wsiBase: 56 },
+    { label: "Route A", durationBase: 14, distanceBase: 7.2, jitter: 0.01 },
+    { label: "Route B", durationBase: 16, distanceBase: 6.8, jitter: 0.016 },
+    { label: "Route C", durationBase: 13, distanceBase: 6.4, jitter: 0.022 },
   ];
+
+  const wsiReports: WSIReportInput[] = reports
+    .filter((r) => r.lat !== undefined && r.lng !== undefined)
+    .map((r) => ({ lat: r.lat!, lng: r.lng!, severity: r.severity, createdAt: r.reportedAt }));
+
+  const wsiInfra: WSIInfrastructureInput[] = infrastructure.map((p) => ({ lat: p.lat, lng: p.lng, type: p.type }));
 
   const routes: RouteOption[] = templates.map((tpl, index) => {
     const localSeed = baseSeed + index * 97;
     const localRand = seededRandom(localSeed);
-    const wsiJitter = Math.round((localRand() - 0.5) * 8);
-    const wsi = Math.max(35, Math.min(98, tpl.wsiBase + wsiJitter));
     const duration = Math.max(9, tpl.durationBase + Math.round((localRand() - 0.5) * 4));
     const distance = Math.max(3, +(tpl.distanceBase + (localRand() - 0.5) * 1.2).toFixed(1));
-    const alertsCount = wsi >= 90 ? Math.round(localRand() * 2) : wsi >= 70 ? 2 + Math.round(localRand() * 2) : 4 + Math.round(localRand() * 3);
+    const path = buildPath(origin, { lat: destination.lat, lng: destination.lng }, tpl.jitter, localRand);
+
+    const wsi = computeRouteWSI(path, wsiReports, wsiInfra);
+    const nearbyReports = reportsAlongPath(path, reports);
 
     const highlights =
-      wsi >= 80
-        ? pick(HIGHLIGHT_POOL.positive, localRand, 2)
-        : wsi >= 65
-          ? [...pick(HIGHLIGHT_POOL.positive, localRand, 1), ...pick(HIGHLIGHT_POOL.negative, localRand, 1)]
-          : pick(HIGHLIGHT_POOL.negative, localRand, 2);
+      nearbyReports.length > 0
+        ? Array.from(new Set(nearbyReports.slice(0, 2).map((r) => `${REPORT_CATEGORY_LABEL[r.category]} reported nearby`)))
+        : GENERIC_POSITIVE_HIGHLIGHTS.slice(0, 2);
 
     return {
       id: `${destination.id}-route-${index}`,
@@ -94,10 +105,10 @@ export function generateRoutes(destination: SavedLocation, origin: MapRoutePoint
       durationMin: duration,
       distanceKm: distance,
       wsi,
-      alertsCount,
+      alertsCount: nearbyReports.length,
       recommended: false,
       highlights,
-      path: buildPath(origin, { lat: destination.lat, lng: destination.lng }, 0.01 + index * 0.006, localRand),
+      path,
     };
   });
 

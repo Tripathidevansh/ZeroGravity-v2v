@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SearchBar } from "@/components/shared/SearchBar";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { LocationListItem } from "@/features/destination-search/components/LocationListItem";
-import {
-  RECENT_LOCATIONS,
-  SAVED_LOCATIONS,
-  SUGGESTED_LOCATIONS,
-} from "@/features/destination-search/mockData";
+import { SUGGESTED_LOCATIONS } from "@/features/destination-search/mockData";
+import { useSavedPlaces } from "@/features/destination-search/api/useSavedPlaces";
+import { useJourneyHistory } from "@/features/journey-mode/api/useJourneys";
 import type { SavedLocation } from "@/features/destination-search/types";
 
 export interface DestinationSearchProps {
@@ -18,9 +17,46 @@ export function DestinationSearch({ onSelectLocation, placeholder }: Destination
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const { data: savedPlaceRows, isLoading: savedLoading } = useSavedPlaces();
+  const { data: journeyHistory } = useJourneyHistory(5);
+
+  const savedLocations: SavedLocation[] = useMemo(
+    () =>
+      (savedPlaceRows ?? []).map((row) => ({
+        id: row.id,
+        name: row.name,
+        address: row.address,
+        category: row.category,
+        lat: row.lat,
+        lng: row.lng,
+      })),
+    [savedPlaceRows]
+  );
+
+  // Recent destinations derived from real journey history — deduplicated by
+  // destination name, most recent first.
+  const recentLocations: SavedLocation[] = useMemo(() => {
+    const seen = new Set<string>();
+    const result: SavedLocation[] = [];
+    for (const journey of journeyHistory ?? []) {
+      if (seen.has(journey.destination_name)) continue;
+      seen.add(journey.destination_name);
+      result.push({
+        id: `recent-${journey.id}`,
+        name: journey.destination_name,
+        address: journey.destination_name,
+        category: "custom",
+        lat: journey.destination_lat,
+        lng: journey.destination_lng,
+      });
+      if (result.length >= 3) break;
+    }
+    return result;
+  }, [journeyHistory]);
+
   const allLocations = useMemo(
-    () => [...SAVED_LOCATIONS, ...RECENT_LOCATIONS, ...SUGGESTED_LOCATIONS],
-    []
+    () => [...savedLocations, ...recentLocations, ...SUGGESTED_LOCATIONS],
+    [savedLocations, recentLocations]
   );
 
   const filtered = query.trim()
@@ -90,10 +126,18 @@ export function DestinationSearch({ onSelectLocation, placeholder }: Destination
                     No matching places found
                   </p>
                 )
+              ) : savedLoading ? (
+                <div className="flex justify-center py-6">
+                  <LoadingSpinner size="sm" label="Loading your places" />
+                </div>
               ) : (
                 <>
-                  <SearchSection title="Saved places" locations={SAVED_LOCATIONS} onSelect={handleSelect} />
-                  <SearchSection title="Recent" locations={RECENT_LOCATIONS} onSelect={handleSelect} />
+                  {savedLocations.length > 0 && (
+                    <SearchSection title="Saved places" locations={savedLocations} onSelect={handleSelect} />
+                  )}
+                  {recentLocations.length > 0 && (
+                    <SearchSection title="Recent" locations={recentLocations} onSelect={handleSelect} />
+                  )}
                   <SearchSection title="Suggested" locations={SUGGESTED_LOCATIONS} onSelect={handleSelect} />
                 </>
               )}

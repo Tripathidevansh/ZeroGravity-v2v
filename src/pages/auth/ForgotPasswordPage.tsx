@@ -1,23 +1,39 @@
+import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import type { FormEvent } from "react";
 import { AuthCard } from "@/pages/auth/AuthCard";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/contexts/ToastContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { ROUTES } from "@/routes/paths";
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
+  const { resetPassword } = useAuth();
   const { showToast } = useToast();
 
-  // Phase 2: no real auth/email yet — this simulates the reset flow so the
-  // demo is clickable end-to-end. Real email delivery lands in Phase 3.
-  const handleSubmit = (e: FormEvent) => {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+
+    const { error: resetError } = await resetPassword(email);
+
+    setIsSubmitting(false);
+
+    if (resetError) {
+      setError(resetError);
+      return;
+    }
+
     showToast({
       variant: "success",
       title: "Reset link sent",
-      description: "Check your inbox for a link to reset your password. (Simulated — no email sent.)",
+      description: "Check your inbox for a link to reset your password.",
     });
     navigate(ROUTES.LOGIN);
   };
@@ -33,8 +49,17 @@ export default function ForgotPasswordPage() {
       }
     >
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <Input type="email" label="Email" placeholder="you@example.com" autoComplete="email" required />
-        <Button type="submit" className="mt-2 w-full">
+        <Input
+          type="email"
+          label="Email"
+          placeholder="you@example.com"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={error ?? undefined}
+          required
+        />
+        <Button type="submit" isLoading={isSubmitting} className="mt-2 w-full">
           Send reset link
         </Button>
       </form>

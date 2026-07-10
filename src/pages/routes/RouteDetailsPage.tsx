@@ -1,17 +1,21 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Clock, Route as RouteIcon, Navigation2 } from "lucide-react";
+import { ArrowLeft, Clock, Route as RouteIcon, Navigation2, Sparkles } from "lucide-react";
 import { PageWrapper } from "@/components/shared/PageWrapper";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { MapView } from "@/components/shared/MapView";
 import { WSIScore } from "@/components/shared/WSIScore";
 import { ReportCard } from "@/features/community-reports/components/ReportCard";
 import { RouteTimeline } from "@/features/route-details/components/RouteTimeline";
 import { NearbyPlaceList } from "@/features/route-details/components/NearbyPlaceList";
 import { getNearbyPlaces, getRouteTimeline, getReportsAlongRoute } from "@/features/route-details/mockData";
+import { useReports } from "@/features/community-reports/api/useReports";
+import { useInfrastructurePoints } from "@/services/infrastructureService";
+import { useRouteExplanation } from "@/features/route-details/api/useRouteExplanation";
 import { useRouteSearch } from "@/contexts/RouteSearchContext";
 import { formatDistanceKm, formatDurationMin } from "@/utils/formatting";
 import { ROUTES } from "@/routes/paths";
@@ -20,8 +24,11 @@ export default function RouteDetailsPage() {
   const { routeId } = useParams<{ routeId: string }>();
   const navigate = useNavigate();
   const { routes, destination, selectRoute } = useRouteSearch();
+  const { data: reports } = useReports();
+  const { data: infrastructure } = useInfrastructurePoints();
 
   const route = routes.find((r) => r.id === routeId);
+  const explanation = useRouteExplanation(route ?? null, destination?.name ?? "");
 
   useEffect(() => {
     if (route) selectRoute(route.id);
@@ -44,9 +51,9 @@ export default function RouteDetailsPage() {
     );
   }
 
-  const nearbyPlaces = getNearbyPlaces(route);
+  const nearbyPlaces = getNearbyPlaces(route, infrastructure ?? []);
   const timeline = getRouteTimeline(route);
-  const reports = getReportsAlongRoute(route);
+  const reportsOnRoute = getReportsAlongRoute(route, reports ?? []);
   const markers = nearbyPlaces.map((p) => ({ id: p.id, type: p.type, name: p.name, lat: p.lat, lng: p.lng }));
 
   return (
@@ -103,6 +110,33 @@ export default function RouteDetailsPage() {
             </Card>
           </div>
 
+          <Card variant="glass">
+            <CardHeader>
+              <div>
+                <CardTitle>AI route explanation</CardTitle>
+                <CardDescription>Why this route scored the way it did</CardDescription>
+              </div>
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-500/12 text-primary-300">
+                <Sparkles size={18} />
+              </span>
+            </CardHeader>
+            <CardContent>
+              {explanation.isLoading ? (
+                <div className="flex items-center gap-2 py-2 text-neutral-500">
+                  <LoadingSpinner size="sm" label="Generating explanation" />
+                  Generating explanation…
+                </div>
+              ) : explanation.isError ? (
+                <p className="text-sm text-neutral-500">
+                  AI explanation isn't available right now
+                  {explanation.error instanceof Error ? `: ${explanation.error.message}` : "."}
+                </p>
+              ) : (
+                <p className="text-sm leading-relaxed text-neutral-300">{explanation.data}</p>
+              )}
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <div>
@@ -119,14 +153,14 @@ export default function RouteDetailsPage() {
             <CardHeader>
               <div>
                 <CardTitle>Community reports on this route</CardTitle>
-                <CardDescription>{reports.length} reports along this path</CardDescription>
+                <CardDescription>{reportsOnRoute.length} reports along this path</CardDescription>
               </div>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
-              {reports.length === 0 ? (
+              {reportsOnRoute.length === 0 ? (
                 <p className="text-sm text-neutral-500">No reports along this route. Looking good.</p>
               ) : (
-                reports.map((report) => <ReportCard key={report.id} report={report} />)
+                reportsOnRoute.map((report) => <ReportCard key={report.id} report={report} />)
               )}
             </CardContent>
           </Card>
@@ -137,11 +171,15 @@ export default function RouteDetailsPage() {
             <CardHeader>
               <div>
                 <CardTitle>Nearby safe places</CardTitle>
-                <CardDescription>Police, hospitals & 24/7 spots</CardDescription>
+                <CardDescription>Police, hospitals &amp; 24/7 spots</CardDescription>
               </div>
             </CardHeader>
             <CardContent>
-              <NearbyPlaceList places={nearbyPlaces} />
+              {nearbyPlaces.length === 0 ? (
+                <p className="text-sm text-neutral-500">No verified infrastructure points found near this route.</p>
+              ) : (
+                <NearbyPlaceList places={nearbyPlaces} />
+              )}
             </CardContent>
           </Card>
         </div>

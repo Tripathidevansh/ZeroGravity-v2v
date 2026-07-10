@@ -6,7 +6,7 @@ import { APP_NAME } from "@/utils/constants";
 import { Button } from "@/components/ui/Button";
 import type { NavItem } from "@/utils/constants";
 import { ROUTES } from "@/routes/paths";
-import { NOTIFICATIONS } from "@/features/notifications/mockData";
+import { useNotifications } from "@/features/notifications/api/useNotifications";
 
 export interface NavbarProps {
   navItems: NavItem[];
@@ -15,6 +15,8 @@ export interface NavbarProps {
 
 export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { data: notifications } = useNotifications();
+  const hasUnread = isAuthenticated && (notifications ?? []).some((n) => !n.read);
 
   return (
     <header className="sticky top-0 z-40 px-3 pt-3 sm:px-5 sm:pt-4">
@@ -52,7 +54,7 @@ export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
                 aria-label="Notifications"
               >
                 <Bell size={18} />
-                {NOTIFICATIONS.some((n) => !n.read) && (
+                {hasUnread && (
                   <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(124,58,237,0.8)]" />
                 )}
               </Link>

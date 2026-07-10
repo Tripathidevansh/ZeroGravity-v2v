@@ -6,14 +6,25 @@ import { WSIScore } from "@/components/shared/WSIScore";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { RouteTimeline } from "@/features/route-details/components/RouteTimeline";
 import { getNearbyPlaces, getRouteTimeline } from "@/features/route-details/mockData";
+import { useReports } from "@/features/community-reports/api/useReports";
+import { useInfrastructurePoints } from "@/services/infrastructureService";
 import { EmergencyButton } from "@/features/journey-mode/components/EmergencyButton";
 import { useJourneySimulation } from "@/features/journey-mode/hooks/useJourneySimulation";
 import { formatDistanceKm, formatDurationMin } from "@/utils/formatting";
 import type { RouteOption } from "@/features/route-recommendation/types";
 
-export function JourneyActiveView({ route, onEndJourney }: { route: RouteOption; onEndJourney: () => void }) {
-  const sim = useJourneySimulation(route);
-  const nearbyPlaces = getNearbyPlaces(route);
+export interface JourneyActiveViewProps {
+  route: RouteOption;
+  /** Called when the journey ends — `completed` is true on natural arrival,
+   * false when the user manually ends the journey early. */
+  onEndJourney: (completed: boolean) => void;
+}
+
+export function JourneyActiveView({ route, onEndJourney }: JourneyActiveViewProps) {
+  const { data: reports } = useReports();
+  const { data: infrastructure } = useInfrastructurePoints();
+  const sim = useJourneySimulation(route, reports ?? []);
+  const nearbyPlaces = getNearbyPlaces(route, infrastructure ?? []);
   const timeline = getRouteTimeline(route);
   const markers = nearbyPlaces.map((p) => ({ id: p.id, type: p.type, name: p.name, lat: p.lat, lng: p.lng }));
 
@@ -24,7 +35,7 @@ export function JourneyActiveView({ route, onEndJourney }: { route: RouteOption;
         title="Journey completed"
         description={`You arrived safely. Final safety score for this trip: ${route.wsi}.`}
         action={
-          <Button size="sm" onClick={onEndJourney}>
+          <Button size="sm" onClick={() => onEndJourney(true)}>
             Start a new journey
           </Button>
         }
@@ -105,7 +116,7 @@ export function JourneyActiveView({ route, onEndJourney }: { route: RouteOption;
           </CardContent>
         </Card>
 
-        <Button variant="outline" onClick={onEndJourney}>
+        <Button variant="outline" onClick={() => onEndJourney(false)}>
           End journey
         </Button>
       </div>

@@ -1,57 +1,31 @@
 import type { RouteOption } from "@/features/route-recommendation/types";
 import type { NearbyPlace, TimelineStep } from "@/features/route-details/types";
-import { COMMUNITY_REPORTS } from "@/features/community-reports/mockData";
 import type { CommunityReport } from "@/features/community-reports/types";
+import type { InfrastructurePoint } from "@/services/infrastructureService";
+import { distanceKm } from "@/services/wsiEngine";
 
-const NEARBY_POLICE_NAMES = ["Sector 58 Police Post", "Sector 39 Police Station"];
-const NEARBY_HOSPITAL_NAMES = ["Fortis Hospital", "Kailash Hospital"];
-const NEARBY_SAFE_PLACE_NAMES = ["24/7 Fuel Station", "DLF Mall of India", "Metro Station Help Desk"];
+const NEARBY_RADIUS_KM = 2;
+const REPORT_RADIUS_KM = 1.5;
 
-function jitterPoint(base: { lat: number; lng: number }, magnitude: number, seed: number) {
-  const dx = (Math.sin(seed) * magnitude) % magnitude;
-  const dy = (Math.cos(seed * 1.7) * magnitude) % magnitude;
-  return { lat: base.lat + dx, lng: base.lng + dy };
-}
-
-export function getNearbyPlaces(route: RouteOption): NearbyPlace[] {
-  const midpoint = route.path[Math.floor(route.path.length / 2)];
+/** Real infrastructure points within range of any point on the route path. */
+export function getNearbyPlaces(route: RouteOption, infrastructure: InfrastructurePoint[]): NearbyPlace[] {
   const places: NearbyPlace[] = [];
 
-  NEARBY_POLICE_NAMES.forEach((name, i) => {
-    const p = jitterPoint(midpoint, 0.012, i + 1);
-    places.push({
-      id: `${route.id}-police-${i}`,
-      name,
-      type: "police",
-      address: "Along the route corridor",
-      distanceKm: +(0.4 + i * 0.6).toFixed(1),
-      ...p,
-    });
-  });
+  for (const point of infrastructure) {
+    const distances = route.path.map((p) => distanceKm(p, point));
+    const nearest = Math.min(...distances);
+    if (nearest > NEARBY_RADIUS_KM) continue;
 
-  NEARBY_HOSPITAL_NAMES.forEach((name, i) => {
-    const p = jitterPoint(midpoint, 0.012, i + 4);
     places.push({
-      id: `${route.id}-hospital-${i}`,
-      name,
-      type: "hospital",
-      address: "Near the route",
-      distanceKm: +(0.8 + i * 0.7).toFixed(1),
-      ...p,
+      id: point.id,
+      name: point.name,
+      type: point.type,
+      address: point.address,
+      distanceKm: +nearest.toFixed(1),
+      lat: point.lat,
+      lng: point.lng,
     });
-  });
-
-  NEARBY_SAFE_PLACE_NAMES.forEach((name, i) => {
-    const p = jitterPoint(midpoint, 0.012, i + 8);
-    places.push({
-      id: `${route.id}-safe-${i}`,
-      name,
-      type: "safe-place",
-      address: "Open 24 hours",
-      distanceKm: +(0.3 + i * 0.5).toFixed(1),
-      ...p,
-    });
-  });
+  }
 
   return places.sort((a, b) => a.distanceKm - b.distanceKm);
 }
@@ -79,6 +53,10 @@ export function getRouteTimeline(route: RouteOption): TimelineStep[] {
   });
 }
 
-export function getReportsAlongRoute(route: RouteOption): CommunityReport[] {
-  return COMMUNITY_REPORTS.slice(0, route.alertsCount);
+/** Real community reports within range of any point on the route path. */
+export function getReportsAlongRoute(route: RouteOption, reports: CommunityReport[]): CommunityReport[] {
+  return reports.filter((report) => {
+    if (report.lat === undefined || report.lng === undefined) return false;
+    return route.path.some((point) => distanceKm(point, { lat: report.lat!, lng: report.lng! }) <= REPORT_RADIUS_KM);
+  });
 }

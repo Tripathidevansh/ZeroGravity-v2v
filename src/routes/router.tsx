@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import { AuthenticatedLayout } from "@/layouts/AuthenticatedLayout";
+import { ProtectedRoute } from "@/routes/ProtectedRoute";
 import LandingPage from "@/pages/landing/LandingPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import SignupPage from "@/pages/auth/SignupPage";
@@ -18,9 +19,9 @@ import { ROUTES } from "@/routes/paths";
 /**
  * Route tree.
  * Public routes (landing, auth) use PublicLayout.
- * App routes (dashboard, reports, journey, profile) use AuthenticatedLayout.
- * Phase 1: no route guards yet — auth-gating will be added once
- * Supabase auth is wired up in a later phase.
+ * App routes (dashboard, reports, journey, profile, ...) use
+ * AuthenticatedLayout and are gated behind ProtectedRoute, which checks the
+ * real Supabase session and redirects to /login if there isn't one.
  */
 export const router = createBrowserRouter([
   {
@@ -33,15 +34,20 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    element: <AuthenticatedLayout />,
+    element: <ProtectedRoute />,
     children: [
-      { path: ROUTES.DASHBOARD, element: <DashboardPage /> },
-      { path: ROUTES.REPORTS, element: <ReportsPage /> },
-      { path: ROUTES.JOURNEY, element: <JourneyPage /> },
-      { path: ROUTES.PROFILE, element: <ProfilePage /> },
-      { path: ROUTES.ROUTE_RESULTS, element: <RouteResultsPage /> },
-      { path: ROUTES.ROUTE_DETAILS, element: <RouteDetailsPage /> },
-      { path: ROUTES.NOTIFICATIONS, element: <NotificationsPage /> },
+      {
+        element: <AuthenticatedLayout />,
+        children: [
+          { path: ROUTES.DASHBOARD, element: <DashboardPage /> },
+          { path: ROUTES.REPORTS, element: <ReportsPage /> },
+          { path: ROUTES.JOURNEY, element: <JourneyPage /> },
+          { path: ROUTES.PROFILE, element: <ProfilePage /> },
+          { path: ROUTES.ROUTE_RESULTS, element: <RouteResultsPage /> },
+          { path: ROUTES.ROUTE_DETAILS, element: <RouteDetailsPage /> },
+          { path: ROUTES.NOTIFICATIONS, element: <NotificationsPage /> },
+        ],
+      },
     ],
   },
   {

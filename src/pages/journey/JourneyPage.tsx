@@ -1,27 +1,99 @@
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { PageWrapper } from "@/components/shared/PageWrapper";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { DestinationSearch } from "@/features/destination-search/components/DestinationSearch";
 import { RouteCard } from "@/features/route-recommendation/components/RouteCard";
 import { JourneyActiveView } from "@/features/journey-mode/components/JourneyActiveView";
+import { useStartJourney, useEndJourney, ACTIVE_JOURNEY_QUERY_KEY } from "@/features/journey-mode/api/useJourneys";
+import { createNotification } from "@/features/notifications/api/notificationsService";
+import { NOTIFICATIONS_QUERY_KEY } from "@/features/notifications/api/useNotifications";
 import { useRouteSearch } from "@/contexts/RouteSearchContext";
+import { DEFAULT_ORIGIN } from "@/features/route-recommendation/mockData";
+import { useToast } from "@/contexts/ToastContext";
 import type { SavedLocation } from "@/features/destination-search/types";
 import type { RouteOption } from "@/features/route-recommendation/types";
 
 export default function JourneyPage() {
   const { destination, routes, selectedRoute, searchDestination, selectRoute, clearSelectedRoute } = useRouteSearch();
+  const startJourney = useStartJourney();
+  const endJourney = useEndJourney();
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  const [activeJourneyId, setActiveJourneyId] = useState<string | null>(null);
+
+  const handleSelectDestination = (location: SavedLocation) => {
+    void searchDestination(location);
+  };
+
+  const handleSelectRoute = async (route: RouteOption) => {
+    selectRoute(route.id);
+    if (!destination) return;
+
+    try {
+      const journey = await startJourney.mutateAsync({
+        destinationName: destination.name,
+        destinationLat: destination.lat,
+        destinationLng: destination.lng,
+        originLat: DEFAULT_ORIGIN.lat,
+        originLng: DEFAULT_ORIGIN.lng,
+        distanceKm: route.distanceKm,
+        durationMin: route.durationMin,
+        wsiScore: route.wsi,
+      });
+      setActiveJourneyId(journey.id);
+      queryClient.invalidateQueries({ queryKey: ACTIVE_JOURNEY_QUERY_KEY });
+
+      await createNotification(
+        "success",
+        "Journey started",
+        `Your journey to ${destination.name} has started. Current safety score: ${route.wsi}.`
+      );
+      queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY });
+    } catch (err) {
+      showToast({
+        variant: "error",
+        title: "Couldn't start journey",
+        description: err instanceof Error ? err.message : "Please try again.",
+      });
+    }
+  };
+
+  const handleEndJourney = async (completed: boolean) => {
+    if (activeJourneyId) {
+      try {
+        await endJourney.mutateAsync({ journeyId: activeJourneyId, status: completed ? "completed" : "cancelled" });
+        queryClient.invalidateQueries({ queryKey: ACTIVE_JOURNEY_QUERY_KEY });
+
+        if (completed && selectedRoute && destination) {
+          await createNotification(
+            "success",
+            "Journey completed",
+            `You arrived safely at ${destination.name}. Trip safety score: ${selectedRoute.wsi}.`
+          );
+          queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY });
+        }
+      } catch (err) {
+        showToast({
+          variant: "error",
+          title: "Couldn't update journey",
+          description: err instanceof Error ? err.message : "Please try again.",
+        });
+      }
+    }
+    setActiveJourneyId(null);
+    clearSelectedRoute();
+  };
 
   if (selectedRoute) {
     return (
       <PageWrapper className="py-0">
         <SectionHeader title="Journey active" description={`Heading to ${destination?.name ?? "your destination"}`} />
-        <JourneyActiveView route={selectedRoute} onEndJourney={clearSelectedRoute} />
+        <JourneyActiveView route={selectedRoute} onEndJourney={handleEndJourney} />
       </PageWrapper>
     );
   }
-
-  const handleSelectDestination = (location: SavedLocation) => searchDestination(location);
-  const handleSelectRoute = (route: RouteOption) => selectRoute(route.id);
 
   return (
     <PageWrapper className="py-0">

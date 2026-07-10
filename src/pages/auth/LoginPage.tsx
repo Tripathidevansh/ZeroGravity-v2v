@@ -1,18 +1,37 @@
-import { Link, useNavigate } from "react-router-dom";
-import type { FormEvent } from "react";
+import { useState, type FormEvent } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthCard } from "@/pages/auth/AuthCard";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/contexts/AuthContext";
 import { ROUTES } from "@/routes/paths";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { signIn } = useAuth();
 
-  // Phase 2: no real auth yet — this simulates a successful login so the
-  // demo flow is clickable end-to-end. Real Supabase auth lands in Phase 3.
-  const handleSubmit = (e: FormEvent) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    navigate(ROUTES.DASHBOARD);
+    setError(null);
+    setIsSubmitting(true);
+
+    const { error: signInError } = await signIn(email, password);
+
+    setIsSubmitting(false);
+
+    if (signInError) {
+      setError(signInError);
+      return;
+    }
+
+    const redirectTo = (location.state as { from?: string } | null)?.from ?? ROUTES.DASHBOARD;
+    navigate(redirectTo, { replace: true });
   };
 
   return (
@@ -29,14 +48,31 @@ export default function LoginPage() {
       }
     >
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <Input type="email" label="Email" placeholder="you@example.com" autoComplete="email" required />
-        <Input type="password" label="Password" placeholder="••••••••" autoComplete="current-password" required />
+        <Input
+          type="email"
+          label="Email"
+          placeholder="you@example.com"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <Input
+          type="password"
+          label="Password"
+          placeholder="••••••••"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={error ?? undefined}
+          required
+        />
         <div className="flex items-center justify-end">
           <Link to={ROUTES.FORGOT_PASSWORD} className="text-xs font-medium text-primary-400 hover:text-primary-300">
             Forgot password?
           </Link>
         </div>
-        <Button type="submit" className="mt-2 w-full">
+        <Button type="submit" isLoading={isSubmitting} className="mt-2 w-full">
           Log in
         </Button>
       </form>

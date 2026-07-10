@@ -17,9 +17,9 @@ export interface JourneySimulationState {
 const SIMULATED_DURATION_SECONDS = 45;
 const TICK_MS = 1000;
 
-export function useJourneySimulation(route: RouteOption | null): JourneySimulationState {
+export function useJourneySimulation(route: RouteOption | null, reports: CommunityReport[] = []): JourneySimulationState {
   const [progress, setProgress] = useState(0);
-  const allAlerts = useMemo(() => (route ? getReportsAlongRoute(route) : []), [route]);
+  const allAlerts = useMemo(() => (route ? getReportsAlongRoute(route, reports) : []), [route, reports]);
   const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   useEffect(() => {

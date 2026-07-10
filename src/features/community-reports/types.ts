@@ -16,6 +16,12 @@ export interface CommunityReport {
   severity: ReportSeverity;
   reportedAt: string; // ISO date
   verifiedCount: number;
+  /** Optional real-data fields — populated once fetched from Supabase. */
+  lat?: number;
+  lng?: number;
+  imageUrl?: string | null;
+  status?: "pending" | "approved" | "rejected";
+  userId?: string;
 }
 
 export const REPORT_CATEGORY_LABEL: Record<ReportCategory, string> = {

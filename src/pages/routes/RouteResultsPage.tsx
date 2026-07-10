@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { PageWrapper } from "@/components/shared/PageWrapper";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { RouteCard } from "@/features/route-recommendation/components/RouteCard";
 import { useRouteSearch } from "@/contexts/RouteSearchContext";
 import { ROUTES, routeDetailsPath } from "@/routes/paths";
@@ -11,12 +12,39 @@ import type { RouteOption } from "@/features/route-recommendation/types";
 
 export default function RouteResultsPage() {
   const navigate = useNavigate();
-  const { destination, routes, selectRoute } = useRouteSearch();
+  const { destination, routes, selectRoute, isSearching, searchError } = useRouteSearch();
 
   const handleSelect = (route: RouteOption) => {
     selectRoute(route.id);
     navigate(routeDetailsPath(route.id));
   };
+
+  if (isSearching) {
+    return (
+      <PageWrapper className="py-0">
+        <div className="flex justify-center py-20">
+          <LoadingSpinner size="lg" label="Scoring the safest routes" />
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  if (searchError) {
+    return (
+      <PageWrapper className="py-0">
+        <EmptyState
+          icon={<AlertTriangle size={32} />}
+          title="Couldn't score routes"
+          description={searchError}
+          action={
+            <Button size="sm" onClick={() => navigate(ROUTES.DASHBOARD)}>
+              Go to dashboard
+            </Button>
+          }
+        />
+      </PageWrapper>
+    );
+  }
 
   if (!destination) {
     return (

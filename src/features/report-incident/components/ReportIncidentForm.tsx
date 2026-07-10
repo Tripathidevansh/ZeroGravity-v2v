@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/contexts/ToastContext";
+import { useCreateReport } from "@/features/community-reports/api/useReports";
+import { DEFAULT_ORIGIN } from "@/features/route-recommendation/mockData";
 import { REPORT_CATEGORY_LABEL, type ReportCategory, type ReportSeverity } from "@/features/community-reports/types";
 
 const SEVERITY_OPTIONS: { value: ReportSeverity; label: string }[] = [
@@ -14,28 +16,52 @@ const SEVERITY_OPTIONS: { value: ReportSeverity; label: string }[] = [
   { value: "high", label: "High" },
 ];
 
+/** Best-effort current position; falls back to the app's default origin
+ * (JIIT, Sector 62, Noida) if geolocation is denied or unavailable — the
+ * report still submits successfully either way. */
+function getCurrentPosition(): Promise<{ lat: number; lng: number }> {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve(DEFAULT_ORIGIN);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => resolve(DEFAULT_ORIGIN),
+      { timeout: 4000 }
+    );
+  });
+}
+
 export interface ReportIncidentFormProps {
   onSubmitted?: () => void;
 }
 
 export function ReportIncidentForm({ onSubmitted }: ReportIncidentFormProps) {
   const { showToast } = useToast();
+  const createReport = useCreateReport();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState<ReportCategory>("poor-lighting");
   const [severity, setSeverity] = useState<ReportSeverity>("medium");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
-  const [imageName, setImageName] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!description.trim() || !location.trim()) return;
 
-    setIsSubmitting(true);
-    // No backend in Phase 2 — simulate a submission delay for realistic feel.
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const position = await getCurrentPosition();
+      await createReport.mutateAsync({
+        category,
+        description,
+        location,
+        severity,
+        imageFile,
+        ...position,
+      });
+
       showToast({
         variant: "success",
         title: "Report submitted",
@@ -43,9 +69,15 @@ export function ReportIncidentForm({ onSubmitted }: ReportIncidentFormProps) {
       });
       setDescription("");
       setLocation("");
-      setImageName(null);
+      setImageFile(null);
       onSubmitted?.();
-    }, 600);
+    } catch (err) {
+      showToast({
+        variant: "error",
+        title: "Couldn't submit report",
+        description: err instanceof Error ? err.message : "Please try again.",
+      });
+    }
   };
 
   return (
@@ -102,12 +134,12 @@ export function ReportIncidentForm({ onSubmitted }: ReportIncidentFormProps) {
           type="file"
           accept="image/*"
           className="hidden"
-          onChange={(e) => setImageName(e.target.files?.[0]?.name ?? null)}
+          onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
         />
-        {imageName ? (
+        {imageFile ? (
           <div className="flex items-center justify-between rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface-raised)] px-3.5 py-2.5 text-sm text-neutral-300">
-            <span className="truncate">{imageName}</span>
-            <button type="button" onClick={() => setImageName(null)} className="text-neutral-500 hover:text-neutral-100">
+            <span className="truncate">{imageFile.name}</span>
+            <button type="button" onClick={() => setImageFile(null)} className="text-neutral-500 hover:text-neutral-100">
               <X size={16} />
             </button>
           </div>
@@ -123,7 +155,7 @@ export function ReportIncidentForm({ onSubmitted }: ReportIncidentFormProps) {
         )}
       </div>
 
-      <Button type="submit" isLoading={isSubmitting} className="mt-2 w-full">
+      <Button type="submit" isLoading={createReport.isPending} className="mt-2 w-full">
         Submit report
       </Button>
     </form>
