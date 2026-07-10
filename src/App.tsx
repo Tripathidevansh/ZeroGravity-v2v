@@ -7,24 +7,28 @@ import { useToast } from "@/contexts/ToastContext";
 export default function App() {
   const isOnline = useOnlineStatus();
   const { showToast } = useToast();
-  const hasMountedRef = useRef(false);
+  const prevOnline = useRef<boolean | null>(null);
 
   useEffect(() => {
-    // Skip the toast on initial mount — only react to actual transitions.
-    if (!hasMountedRef.current) {
-      hasMountedRef.current = true;
+    // Initialize the ref on the first run to the current status so we don't trigger a toast on mount
+    if (prevOnline.current === null) {
+      prevOnline.current = isOnline;
       return;
     }
 
-    showToast(
-      isOnline
-        ? { variant: "success", title: "Back online", description: "Your connection has been restored." }
-        : {
-            variant: "warning",
-            title: "You're offline",
-            description: "Some data may be out of date until your connection returns.",
-          }
-    );
+    // Only show the toast when the online state actually changes
+    if (prevOnline.current !== isOnline) {
+      prevOnline.current = isOnline;
+      showToast(
+        isOnline
+          ? { variant: "success", title: "Back online", description: "Your connection has been restored." }
+          : {
+              variant: "warning",
+              title: "You're offline",
+              description: "Some data may be out of date until your connection returns.",
+            }
+      );
+    }
   }, [isOnline, showToast]);
 
   return <RouterProvider router={router} />;

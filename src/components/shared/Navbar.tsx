@@ -35,8 +35,10 @@ export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
               to={item.path}
               className={({ isActive }) =>
                 cn(
-                  "rounded-lg px-3.5 py-2 text-sm font-medium text-neutral-400 transition-colors hover:bg-white/[0.05] hover:text-neutral-100",
-                  isActive && "bg-white/[0.06] text-neutral-50"
+                  "rounded-lg px-3.5 py-2 text-sm font-medium transition-all duration-200",
+                  isActive
+                    ? "bg-white/[0.08] text-neutral-50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]"
+                    : "text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-100"
                 )
               }
             >

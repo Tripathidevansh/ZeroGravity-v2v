@@ -73,3 +73,31 @@ export async function fetchActiveJourney(): Promise<JourneyRow | null> {
   if (error) throw new Error(error.message);
   return data;
 }
+
+export interface LiveLocationUpdate {
+  lat: number;
+  lng: number;
+  heading: number | null;
+  speed: number | null;
+  accuracy: number;
+}
+
+/** Persists the latest known position for an active journey. Called
+ * repeatedly (throttled client-side) while Journey Mode is tracking —
+ * overwrites the same row rather than appending history, since only the
+ * current position matters for the live map and trusted-contact tracking. */
+export async function updateJourneyLocation(journeyId: string, location: LiveLocationUpdate): Promise<void> {
+  const { error } = await supabase
+    .from("journeys")
+    .update({
+      current_lat: location.lat,
+      current_lng: location.lng,
+      current_heading: location.heading,
+      current_speed: location.speed,
+      current_accuracy: location.accuracy,
+      location_updated_at: new Date().toISOString(),
+    })
+    .eq("id", journeyId);
+
+  if (error) throw new Error(error.message);
+}

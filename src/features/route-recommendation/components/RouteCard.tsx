@@ -15,8 +15,8 @@ export function RouteCard({ route, onSelect }: RouteCardProps) {
   return (
     <Card
       className={cn(
-        "cursor-pointer transition-colors hover:border-primary-500/40",
-        route.recommended && "border-primary-500/40 bg-primary-500/[0.04]"
+        "cursor-pointer transition-all duration-300 ease-out hover:scale-[1.01] hover:border-primary-500/45 hover:shadow-[0_8px_30px_rgba(124,58,237,0.12)] active:scale-[0.995]",
+        route.recommended && "border-primary-500/40 bg-primary-500/[0.04] hover:shadow-[0_8px_32px_rgba(124,58,237,0.18)]"
       )}
       onClick={() => onSelect(route)}
     >

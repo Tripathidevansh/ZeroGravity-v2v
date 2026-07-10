@@ -60,19 +60,13 @@ function reportsAlongPath(path: MapRoutePoint[], reports: CommunityReport[]): Co
  * scores themselves are fully dynamic, recalculated from current data every
  * time this is called.
  */
-export function generateRoutes(
+export async function generateRoutes(
   destination: SavedLocation,
   reports: CommunityReport[],
   infrastructure: InfrastructurePoint[],
   origin: MapRoutePoint
-): RouteOption[] {
+): Promise<RouteOption[]> {
   const baseSeed = hashSeed(destination.id);
-
-  const templates = [
-    { label: "Route A", durationBase: 14, distanceBase: 7.2, jitter: 0.01 },
-    { label: "Route B", durationBase: 16, distanceBase: 6.8, jitter: 0.016 },
-    { label: "Route C", durationBase: 13, distanceBase: 6.4, jitter: 0.022 },
-  ];
 
   const wsiReports: WSIReportInput[] = reports
     .filter((r) => r.lat !== undefined && r.lng !== undefined)
@@ -80,33 +74,94 @@ export function generateRoutes(
 
   const wsiInfra: WSIInfrastructureInput[] = infrastructure.map((p) => ({ lat: p.lat, lng: p.lng, type: p.type }));
 
-  const routes: RouteOption[] = templates.map((tpl, index) => {
-    const localSeed = baseSeed + index * 97;
-    const localRand = seededRandom(localSeed);
-    const duration = Math.max(9, tpl.durationBase + Math.round((localRand() - 0.5) * 4));
-    const distance = Math.max(3, +(tpl.distanceBase + (localRand() - 0.5) * 1.2).toFixed(1));
-    const path = buildPath(origin, { lat: destination.lat, lng: destination.lng }, tpl.jitter, localRand);
+  const token = (import.meta.env.VITE_MAPBOX_TOKEN as string || "").trim();
+  let mapboxRoutes: any[] = [];
 
-    const wsi = computeRouteWSI(path, wsiReports, wsiInfra);
-    const nearbyReports = reportsAlongPath(path, reports);
+  if (token) {
+    try {
+      const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.lng},${origin.lat};${destination.lng},${destination.lat}?geometries=geojson&alternatives=true&overview=full&access_token=${token}`;
+      const response = await fetch(url);
+      if (response.ok) {
+        const json = await response.json();
+        if (json.routes && json.routes.length > 0) {
+          mapboxRoutes = json.routes;
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to fetch routes from Mapbox Directions API, falling back to mock routing:", err);
+    }
+  }
 
-    const highlights =
-      nearbyReports.length > 0
-        ? Array.from(new Set(nearbyReports.slice(0, 2).map((r) => `${REPORT_CATEGORY_LABEL[r.category]} reported nearby`)))
-        : GENERIC_POSITIVE_HIGHLIGHTS.slice(0, 2);
+  let routes: RouteOption[] = [];
 
-    return {
-      id: `${destination.id}-route-${index}`,
-      label: tpl.label,
-      durationMin: duration,
-      distanceKm: distance,
-      wsi,
-      alertsCount: nearbyReports.length,
-      recommended: false,
-      highlights,
-      path,
-    };
-  });
+  if (mapboxRoutes.length > 0) {
+    routes = mapboxRoutes.map((mapboxRoute, index) => {
+      // Map coordinates from [lng, lat] to { lat, lng }
+      const path: MapRoutePoint[] = mapboxRoute.geometry.coordinates.map((coord: number[]) => ({
+        lat: coord[1],
+        lng: coord[0],
+      }));
+
+      const durationMin = Math.round(mapboxRoute.duration / 60);
+      const distanceKm = +(mapboxRoute.distance / 1000).toFixed(1);
+
+      const wsi = computeRouteWSI(path, wsiReports, wsiInfra);
+      const nearbyReports = reportsAlongPath(path, reports);
+
+      const label = index === 0 ? "Route A" : index === 1 ? "Route B" : "Route C";
+
+      const highlights =
+        nearbyReports.length > 0
+          ? Array.from(new Set(nearbyReports.slice(0, 2).map((r) => `${REPORT_CATEGORY_LABEL[r.category]} reported nearby`)))
+          : GENERIC_POSITIVE_HIGHLIGHTS.slice(0, 2);
+
+      return {
+        id: `${destination.id}-route-${index}`,
+        label,
+        durationMin,
+        distanceKm,
+        wsi,
+        alertsCount: nearbyReports.length,
+        recommended: false,
+        highlights,
+        path,
+      };
+    });
+  } else {
+    const templates = [
+      { label: "Route A", durationBase: 14, distanceBase: 7.2, jitter: 0.01 },
+      { label: "Route B", durationBase: 16, distanceBase: 6.8, jitter: 0.016 },
+      { label: "Route C", durationBase: 13, distanceBase: 6.4, jitter: 0.022 },
+    ];
+
+    routes = templates.map((tpl, index) => {
+      const localSeed = baseSeed + index * 97;
+      const localRand = seededRandom(localSeed);
+      const duration = Math.max(9, tpl.durationBase + Math.round((localRand() - 0.5) * 4));
+      const distance = Math.max(3, +(tpl.distanceBase + (localRand() - 0.5) * 1.2).toFixed(1));
+      const path = buildPath(origin, { lat: destination.lat, lng: destination.lng }, tpl.jitter, localRand);
+
+      const wsi = computeRouteWSI(path, wsiReports, wsiInfra);
+      const nearbyReports = reportsAlongPath(path, reports);
+
+      const highlights =
+        nearbyReports.length > 0
+          ? Array.from(new Set(nearbyReports.slice(0, 2).map((r) => `${REPORT_CATEGORY_LABEL[r.category]} reported nearby`)))
+          : GENERIC_POSITIVE_HIGHLIGHTS.slice(0, 2);
+
+      return {
+        id: `${destination.id}-route-${index}`,
+        label: tpl.label,
+        durationMin: duration,
+        distanceKm: distance,
+        wsi,
+        alertsCount: nearbyReports.length,
+        recommended: false,
+        highlights,
+        path,
+      };
+    });
+  }
 
   const best = routes.reduce((a, b) => (b.wsi > a.wsi ? b : a));
   best.recommended = true;

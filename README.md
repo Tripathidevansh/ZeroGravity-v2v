@@ -318,3 +318,230 @@ Mapbox's documented Search Box API shape but not exercised live. Type 2+
 characters into either search box and confirm real suggestions appear; if
 not, check the Network tab for the `suggest` request/response the same way
 as before.
+
+---
+
+## Task 3 — Real live GPS tracking during Journey Mode
+
+**New migration:** `supabase/migrations/0003_live_location_tracking.sql` — adds
+`current_lat`, `current_lng`, `current_heading`, `current_speed`,
+`current_accuracy`, `location_updated_at` to the existing `journeys` table
+(extended, not a new table), and enables Supabase Realtime on it for Task 6.
+
+- `hooks/useGeolocation({ watch: true })` (built in Task 1/2) now powers a
+  new `features/journey-mode/hooks/useLiveJourneyTracking.ts` — starts
+  watching the browser's real position the instant Journey Mode becomes
+  active, stops the instant it ends (both via the journey ending and via
+  component unmount — verified both paths clear the browser watch).
+- Position updates are available to the UI immediately; writes to Supabase
+  are throttled to once per 5 seconds so a fast GPS chip doesn't flood the
+  database, while still satisfying "every few seconds."
+- `MapView` was restructured to support this: the Mapbox GL instance used to
+  be created once and never updated — I added a second effect that moves a
+  dedicated "you are here" marker and eases the camera (`map.easeTo`) to
+  follow, without recreating the map. The mock-map fallback gets the same
+  live-follow behavior for free (it's a plain re-render), plus a pulsing dot
+  matching the real marker's look.
+- Journey Mode's map now shows a small pulsing "Live GPS" badge once a real
+  fix is available.
+
+**Not yet done:** the persisted `current_lat`/`current_lng` isn't read back
+by anything yet — that's Task 6 (the public tracking page) and Task 7 (live
+Emergency Dashboard), which will subscribe to these same columns via
+Supabase Realtime. Task 3 on its own is scoped to "capture and persist,"
+which is what's implemented and verified here.
+
+---
+
+## Task 4 + 5 — Full emergency capture + real trusted-contact emails
+
+**New migration:** `supabase/migrations/0004_emergency_capture_and_contact_email.sql`
+— extends `emergency_events` with `tracking_token`, `destination_name`,
+`destination_lat/lng`, `route_label`, `wsi_score`, `journey_status`,
+`battery_level`, `address`; adds `email` to `trusted_contacts`.
+
+**Task 4 — the emergency record is now actually complete:**
+- Address: reverse-geocoded via Mapbox (`services/mapboxGeocodingService.ts`,
+  the older, longest-documented v5 endpoint — chosen deliberately over the
+  newer Search Box reverse endpoint for stability, given I can't test either
+  live from here).
+- Battery level: `utils/battery.ts`, uses the Battery Status API where
+  supported (Chrome/Edge/Android — not Firefox/Safari, which don't implement
+  it), returns `null` gracefully otherwise, exactly matching "if available."
+- Destination, route, WSI, journey status: when SOS fires during an active
+  journey, `EmergencySOSButton` fetches that journey fresh at the moment of
+  activation (not a stale render-time value) and it all gets persisted onto
+  the emergency record itself.
+- All of the above now populate a new "Emergency record" card on the
+  Emergency Dashboard, plus richer timeline entries ("Address resolved: ...",
+  "Device battery captured: 61%", etc.).
+
+**Task 5 — real emails, not simulated:**
+- New edge function `supabase/functions/send-emergency-email` — sends via
+  Resend, one email per trusted contact with an address on file, containing
+  every field the brief listed (user name, time, address, lat/lng, Google
+  Maps link, route, destination, journey status, WSI, battery %, tracking
+  link).
+- `notifyTrustedContacts.ts` — this is the exact function I flagged back in
+  the original SOS build as "the integration point for a real provider
+  later." It now does exactly that: calls the edge function instead of a
+  `setTimeout` simulation, and reports real per-contact `sent`/`failed`
+  status (not a guess) back into the emergency record.
+- Trusted contacts now have an `email` field (form + display updated); a
+  contact without one is honestly labeled "No email on file" rather than
+  silently skipped, and shows as "Failed" in delivery status if an alert
+  fires while they're missing one.
+- **Delivery status terminology note:** the brief asks for
+  "Delivered / Pending / Failed." What's implemented is "sent successfully
+  via the Resend API" (shown as "Delivered") vs. "the API call failed"
+  (shown as "Failed") — that's the honest level of granularity available
+  synchronously. True delivery confirmation (inbox-received, not just
+  API-accepted) would need Resend's webhook system posting back to another
+  edge function, which isn't built here — flagging this rather than
+  overclaiming what "Delivered" verifies.
+
+**Setup required before this works:**
+1. Run migration `0004_emergency_capture_and_contact_email.sql`.
+2. Get a Resend API key (resend.com), then:
+   ```
+   supabase functions deploy send-emergency-email
+   supabase secrets set RESEND_API_KEY=your-key-here
+   ```
+3. The email sender uses Resend's shared sandbox address
+   (`onboarding@resend.dev`), which works immediately with just an API key —
+   no domain verification needed for testing. Swap in your own verified
+   domain later if you want a branded sender.
+4. Add at least one trusted contact **with an email address** (Profile →
+   Trusted Contacts → Add) before testing SOS, or the delivery status list
+   will correctly show nothing to notify.
+
+**Same untestable-from-here caveat as every other external integration in
+this project:** no network access to `api.resend.com` from this sandbox, so
+this is built correctly against Resend's documented API but not exercised
+live. Trigger a real SOS, check the Emergency Dashboard's delivery status,
+and check your test contact's inbox — if something's off, the Supabase Edge
+Function logs (`supabase functions logs send-emergency-email`) will show the
+real Resend error.
+
+**Tracking link note:** the email includes a link to `/track/{tracking_token}`
+— that page doesn't exist yet (Task 6, not done in this pass), so clicking it
+will 404 for now. This is expected and will resolve once Task 6 is built.
+
+---
+
+## Task 6 + 7 — Public live tracking page + fully-live Emergency Dashboard
+
+This is the most architecturally significant piece so far, so here's the
+actual security reasoning rather than just the feature list.
+
+**The problem:** every table in this app is locked down to
+`auth.uid() = user_id`. A trusted contact who clicks an emergency email link
+has **no Supabase session at all**. A naive fix (a blanket "anon can SELECT"
+RLS policy) would leak *every* emergency event to *any* anonymous visitor,
+not just the one holding the right link — that's a real vulnerability, not
+just sloppy.
+
+**What's actually implemented instead:**
+
+1. **One-time data fetch** goes through a new edge function,
+   `get-emergency-tracking`, deployed with `--no-verify-jwt` (required —
+   anonymous visitors have no JWT to verify). It uses the **service role
+   key** internally (bypasses RLS) but is narrowly scoped: it takes exactly
+   one `tracking_token`, returns exactly that one event (plus its linked
+   journey and the owner's name), and returns a generic "not found" for any
+   token that doesn't match — no enumeration, no partial matches leaked.
+2. **Live location** uses **Supabase Realtime Broadcast**, not
+   `postgres_changes` — Broadcast channels are plain pub/sub, not gated by
+   table RLS, so an anonymous subscriber can receive them without needing
+   any table read access at all. The owner's browser
+   (`useEmergencyLocationBroadcast`) sends position updates on a channel
+   named `emergency-tracking-{token}`; the public tracking page subscribes
+   to that exact channel name. Neither side ever queries the
+   `emergency_events` or `journeys` tables directly over Realtime.
+3. `emergency_events` got its own `current_lat/lng/heading/speed` columns
+   (migration `0005`), separate from the journey's — because SOS can be
+   triggered standalone from the Dashboard FAB with no journey at all, and
+   the tracking page needs to work either way.
+
+**`/track/:trackingToken`** (public, not behind `ProtectedRoute`, added under
+the existing `PublicLayout`): live map with a following marker, time since
+activation, live clock, safety index, remaining distance to destination (if
+one exists), full timeline, nearby help — refreshes its snapshot every 15s
+to catch status/timeline changes the location broadcast doesn't carry.
+
+**Task 7 — the owner's own Emergency Dashboard is now genuinely live:**
+- Broadcasts and persists its own location (reusing the same hook as the
+  tracking page's source), map now follows in real time.
+- A real `postgres_changes` Realtime subscription on the owner's own row —
+  this one's fine to use directly since RLS already permits the owner to
+  read it; auto-refetches if the row changes from anywhere.
+- Live Women Safety Index computed at the *current* position (distinct from
+  the WSI captured at activation), and live remaining distance to
+  destination.
+- A "copy tracking link" card so the owner can grab/share the same link
+  manually, not just via email.
+
+**Setup required:**
+```
+supabase functions deploy get-emergency-tracking --no-verify-jwt
+```
+No new secret needed — this function only uses `SUPABASE_URL` and
+`SUPABASE_SERVICE_ROLE_KEY`, which Supabase auto-provides to every edge
+function. Also run migration `0005_emergency_live_location.sql`.
+
+**Honest scope boundary:** the owner-side broadcast only runs while
+`/emergency` is open in their browser (mounted in that page component, not
+the shared layout, per "do not modify layouts"). If they navigate away
+during a real emergency, live location updates pause until they return to
+that page — the last known position stays visible on the tracking page, it
+just stops moving. Making this run persistently in the background across
+every page would need a layout-level provider, which wasn't done here to
+respect that constraint. Worth knowing before a live demo.
+
+**Same untestable-from-here caveat, doubled:** this depends on Supabase
+Realtime (Broadcast + postgres_changes) and the edge function's service-role
+access, none of which I can exercise from this sandbox. Please specifically
+test: open `/emergency` as the owner in one browser, open the tracking link
+in a *different* browser/incognito window (simulating the trusted contact),
+and confirm the marker actually moves on the second screen when you move on
+the first (or simulate movement via devtools geolocation override).
+
+---
+
+## Bug fixes + audit pass
+
+**Bug Fix 1 — Destination search hidden under input:** re-verified by
+tracing the actual CSS rather than assuming — this was already resolved by
+the earlier backdrop-removal and Card `overflow-hidden` fixes earlier in
+this project's history. Confirmed no regression: the dropdown container is
+`relative z-30`, the panel is `absolute z-30` with no competing stacking
+context above it anywhere the component is used (checked every `Card
+glow` usage specifically, since that's the one thing that re-enables
+`overflow-hidden`).
+
+**Bug Fix 2 — Settings toggle switches overflowing their card:** this was a
+real, concrete bug — `SettingsRow`'s text wrapper had no `min-w-0`/`flex-1`,
+which is the classic flexbox trap: a flex child's default `min-width: auto`
+can refuse to shrink below its content size, pushing a fixed-width sibling
+(the switch) out past the container on narrow screens. Fixed by adding
+`min-w-0 flex-1` to the text wrapper. Checked every other `justify-between`
+flex row in the codebase for the same pattern — `NotificationItem` already
+had it right; nothing else showed the same risk.
+
+**Bug Fix 3 — audit findings, fixed:**
+- A real edge-case bug: the public tracking page would show an infinite
+  loading spinner forever if the URL's token param was ever empty, instead
+  of an error state. Fixed.
+- An accessibility gap: the "remove photo" button in the report form was
+  icon-only with no accessible name. Added `aria-label`.
+
+**What I did not re-litigate:** the rest of the "complete UI audit" list
+(spacing, hover states, animations, responsive breakpoints across every
+screen) was already covered by the dedicated QA pass earlier in this
+project, and nothing in the Task 1–7 work since then touched layouts or
+shared components in ways that would predictably reintroduce those classes
+of bugs — confirmed via the same regression greps I've been running after
+every change (the CSS arbitrary-value bug, missing keys, stale mock-data
+references). I'd rather tell you honestly that I re-verified specific,
+named things than claim a fresh line-by-line audit of the entire app I
+can't actually click through.

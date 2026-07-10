@@ -1,39 +1,53 @@
+import { supabase } from "@/services/supabaseClient";
 import type { TrustedContactRow } from "@/features/profile/api/profileService";
 import type { NotifiedContactResult } from "@/features/emergency-sos/types";
 
+export interface EmergencyEmailContext {
+  userName: string;
+  triggeredAt: string;
+  address: string | null;
+  lat: number;
+  lng: number;
+  routeLabel: string | null;
+  destinationName: string | null;
+  journeyStatus: string | null;
+  wsiScore: number | null;
+  batteryLevel: number | null;
+  trackingLink: string;
+}
+
 /**
- * Sends an emergency alert to each trusted contact.
- *
- * INTEGRATION POINT: there is no SMS/WhatsApp/voice-call provider wired up
- * yet (would typically be Twilio, MSG91, or similar, called from a Supabase
- * Edge Function so provider credentials stay server-side — same pattern as
- * the Gemini route-explanation function). Until that exists, this simulates
- * a realistic per-contact send: a short delay, then a "sent" result.
- *
- * The function signature and return shape are already what a real
- * implementation would need — swapping the body for a real API call
- * requires no changes anywhere this is called from.
+ * Sends a real emergency email to each trusted contact via the
+ * `send-emergency-email` edge function (Resend). Contacts without an email
+ * on file are reported as "failed" rather than silently skipped, so the
+ * Emergency Dashboard's delivery status is honest about who wasn't reached.
  */
 export async function notifyTrustedContacts(
   contacts: TrustedContactRow[],
-  location: { lat: number; lng: number }
+  context: EmergencyEmailContext
 ): Promise<NotifiedContactResult[]> {
-  const results = await Promise.all(
-    contacts.map(async (contact, index) => {
-      // Stagger slightly so a UI showing per-contact progress feels real
-      // rather than everything resolving in the same tick.
-      await new Promise((resolve) => setTimeout(resolve, 250 + index * 200));
-
-      void location; // would be included in the real alert message/link
-
-      return {
-        contactId: contact.id,
-        name: contact.name,
-        status: "sent" as const,
-        sentAt: new Date().toISOString(),
-      };
-    })
+  const { data, error } = await supabase.functions.invoke<{ results: NotifiedContactResult[] }>(
+    "send-emergency-email",
+    {
+      body: {
+        contacts: contacts.map((c) => ({ id: c.id, name: c.name, email: c.email })),
+        emergency: context,
+      },
+    }
   );
 
-  return results;
+  if (error) {
+    console.error("[SafeCircle AI] send-emergency-email failed:", error.message);
+    // The emergency itself is still active even if notification delivery
+    // failed entirely — report every contact as failed rather than throwing,
+    // so activation isn't blocked by an email outage.
+    return contacts.map((c) => ({
+      contactId: c.id,
+      name: c.name,
+      status: "failed",
+      sentAt: new Date().toISOString(),
+    }));
+  }
+
+  return data?.results ?? [];
 }

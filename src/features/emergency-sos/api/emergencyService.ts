@@ -9,6 +9,14 @@ export interface CreateEmergencyEventInput {
   lng: number;
   journeyId?: string | null;
   timeline: TimelineEntry[];
+  destinationName?: string | null;
+  destinationLat?: number | null;
+  destinationLng?: number | null;
+  routeLabel?: string | null;
+  wsiScore?: number | null;
+  journeyStatus?: string | null;
+  batteryLevel?: number | null;
+  address?: string | null;
 }
 
 export async function createEmergencyEvent(input: CreateEmergencyEventInput): Promise<EmergencyEventRow> {
@@ -25,6 +33,14 @@ export async function createEmergencyEvent(input: CreateEmergencyEventInput): Pr
       lat: input.lat,
       lng: input.lng,
       timeline: input.timeline,
+      destination_name: input.destinationName ?? null,
+      destination_lat: input.destinationLat ?? null,
+      destination_lng: input.destinationLng ?? null,
+      route_label: input.routeLabel ?? null,
+      wsi_score: input.wsiScore ?? null,
+      journey_status: input.journeyStatus ?? null,
+      battery_level: input.batteryLevel ?? null,
+      address: input.address ?? null,
     })
     .select("*")
     .single();
@@ -94,4 +110,29 @@ export async function fetchActiveEmergencyEvent(): Promise<EmergencyEventRow | n
 
   if (error) throw new Error(error.message);
   return data;
+}
+
+export interface EmergencyLocationUpdate {
+  lat: number;
+  lng: number;
+  heading: number | null;
+  speed: number | null;
+}
+
+/** Persists the latest known position directly on the emergency event —
+ * works whether or not a journey is linked, since SOS can be triggered
+ * standalone from the Dashboard. */
+export async function updateEmergencyLocation(eventId: string, location: EmergencyLocationUpdate): Promise<void> {
+  const { error } = await supabase
+    .from("emergency_events")
+    .update({
+      current_lat: location.lat,
+      current_lng: location.lng,
+      current_heading: location.heading,
+      current_speed: location.speed,
+      location_updated_at: new Date().toISOString(),
+    })
+    .eq("id", eventId);
+
+  if (error) throw new Error(error.message);
 }

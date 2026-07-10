@@ -52,6 +52,7 @@ export interface CreateTrustedContactInput {
   name: string;
   relation: string;
   phone: string;
+  email?: string;
   isEmergencyContact?: boolean;
 }
 
@@ -68,6 +69,7 @@ export async function createTrustedContact(input: CreateTrustedContactInput): Pr
       name: input.name,
       relation: input.relation,
       phone: input.phone,
+      email: input.email ?? null,
       is_emergency_contact: input.isEmergencyContact ?? false,
     })
     .select("*")

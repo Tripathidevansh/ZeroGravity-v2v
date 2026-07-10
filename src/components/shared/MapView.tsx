@@ -17,11 +17,19 @@ export interface MapRoutePoint {
   lng: number;
 }
 
+export interface LiveMapPosition extends MapRoutePoint {
+  heading?: number | null;
+}
+
 export interface MapViewProps {
   center: MapRoutePoint;
   routePath?: MapRoutePoint[];
   wsi?: number;
   markers?: MapMarker[];
+  /** A continuously-updating "you are here" position — when provided, the
+   * map recenters to follow it (Journey Mode live tracking, emergency
+   * tracking) instead of staying fixed on `center`. */
+  livePosition?: LiveMapPosition | null;
   className?: string;
   heightClassName?: string;
 }
@@ -39,6 +47,7 @@ export function MapView({
   routePath = [],
   wsi,
   markers = [],
+  livePosition = null,
   className,
   heightClassName = "h-72",
 }: MapViewProps) {
@@ -48,6 +57,7 @@ export function MapView({
         center={center}
         routePath={routePath}
         markers={markers}
+        livePosition={livePosition}
         className={cn("rounded-xl overflow-hidden", heightClassName, className)}
       />
     );
@@ -55,10 +65,11 @@ export function MapView({
 
   return (
     <MockMap
-      center={center}
+      center={livePosition ?? center}
       routePath={routePath}
       wsi={wsi}
       markers={markers}
+      livePosition={livePosition}
       className={cn("rounded-xl overflow-hidden", heightClassName, className)}
     />
   );
@@ -70,17 +81,22 @@ function MapboxMap({
   center,
   routePath,
   markers,
+  livePosition,
   className,
 }: {
   center: MapRoutePoint;
   routePath: MapRoutePoint[];
   markers: MapMarker[];
+  livePosition?: LiveMapPosition | null;
   className?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<import("mapbox-gl").Map | null>(null);
+  const mapboxglRef = useRef<typeof import("mapbox-gl").default | null>(null);
+  const liveMarkerRef = useRef<import("mapbox-gl").Marker | null>(null);
 
+  // Mount-only: create the map once, add the static route + POI markers.
   useEffect(() => {
-    let map: import("mapbox-gl").Map | undefined;
     let isMounted = true;
 
     (async () => {
@@ -89,15 +105,16 @@ function MapboxMap({
       if (!isMounted || !containerRef.current) return;
 
       mapboxgl.accessToken = MAPBOX_TOKEN!;
-      map = new mapboxgl.Map({
+      mapboxglRef.current = mapboxgl;
+      const map = new mapboxgl.Map({
         container: containerRef.current,
         style: "mapbox://styles/mapbox/dark-v11",
         center: [center.lng, center.lat],
         zoom: 13,
       });
+      mapRef.current = map;
 
       map.on("load", () => {
-        if (!map) return;
         if (routePath.length > 1) {
           map.addSource("route", {
             type: "geojson",
@@ -117,6 +134,11 @@ function MapboxMap({
             layout: { "line-join": "round", "line-cap": "round" },
             paint: { "line-color": "#7c5cfc", "line-width": 4 },
           });
+
+          // Fit viewport to show the entire route path
+          const bounds = new mapboxgl.LngLatBounds();
+          routePath.forEach((p) => bounds.extend([p.lng, p.lat]));
+          map.fitBounds(bounds, { padding: 40, animate: false });
         }
 
         markers.forEach((marker) => {
@@ -126,17 +148,44 @@ function MapboxMap({
           el.style.borderRadius = "9999px";
           el.style.border = "2px solid white";
           el.style.background = MARKER_COLOR[marker.type];
-          new mapboxgl.Marker(el).setLngLat([marker.lng, marker.lat]).addTo(map!);
+          new mapboxgl.Marker(el).setLngLat([marker.lng, marker.lat]).addTo(map);
         });
       });
     })();
 
     return () => {
       isMounted = false;
-      map?.remove();
+      liveMarkerRef.current?.remove();
+      liveMarkerRef.current = null;
+      mapRef.current?.remove();
+      mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Reacts to live position changes independently of the mount-only effect
+  // above — creates the "you are here" marker once, then just moves it and
+  // eases the camera to follow, without recreating the map.
+  useEffect(() => {
+    const map = mapRef.current;
+    const mapboxgl = mapboxglRef.current;
+    if (!map || !mapboxgl || !livePosition) return;
+
+    if (!liveMarkerRef.current) {
+      const el = document.createElement("div");
+      el.style.width = "18px";
+      el.style.height = "18px";
+      el.style.borderRadius = "9999px";
+      el.style.border = "3px solid white";
+      el.style.background = "#7c3aed";
+      el.style.boxShadow = "0 0 0 6px rgba(124,58,237,0.3)";
+      liveMarkerRef.current = new mapboxgl.Marker(el).setLngLat([livePosition.lng, livePosition.lat]).addTo(map);
+    } else {
+      liveMarkerRef.current.setLngLat([livePosition.lng, livePosition.lat]);
+    }
+
+    map.easeTo({ center: [livePosition.lng, livePosition.lat], duration: 800 });
+  }, [livePosition]);
 
   return <div ref={containerRef} className={className} />;
 }
@@ -158,18 +207,22 @@ function MockMap({
   routePath,
   wsi,
   markers,
+  livePosition,
   className,
 }: {
   center: MapRoutePoint;
   routePath: MapRoutePoint[];
   wsi?: number;
   markers: MapMarker[];
+  livePosition?: LiveMapPosition | null;
   className?: string;
 }) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const ringClass = wsi !== undefined ? getSafetyLevelConfig(wsi).ringClass : "stroke-primary-500";
 
   // Project lat/lng deltas onto a stable 0–100 viewbox around the given center.
+  // Passing a live position as `center` (done by MapView above) makes this
+  // naturally "follow" on every re-render — no separate follow logic needed.
   const project = (p: MapRoutePoint) => ({
     x: 50 + (p.lng - center.lng) * 900,
     y: 50 - (p.lat - center.lat) * 900,
@@ -179,6 +232,8 @@ function MockMap({
   const pathD = pathPoints
     ? `M ${pathPoints.map((p) => `${p.x},${p.y}`).join(" L ")}`
     : undefined;
+
+  const livePoint = livePosition ? project(livePosition) : null;
 
   return (
     <div
@@ -230,6 +285,18 @@ function MockMap({
             </circle>
           );
         })}
+
+        {livePoint && (
+          <g>
+            <circle cx={livePoint.x} cy={livePoint.y} r="4" fill="#7c3aed" opacity="0.35">
+              <animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite" />
+            </circle>
+            <circle cx={livePoint.x} cy={livePoint.y} r="2.4" fill="#7c3aed" stroke="white" strokeWidth="0.6">
+              <title>Your live location</title>
+            </circle>
+          </g>
+        )}
       </svg>
 
       <div className="pointer-events-none absolute bottom-3 left-3 rounded-sm bg-black/40 px-2 py-1 text-[10px] text-neutral-400 backdrop-blur">

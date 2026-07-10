@@ -48,7 +48,8 @@ export function RouteSearchProvider({ children }: { children: ReactNode }) {
         ]);
 
         setDestination(dest);
-        setRoutes(generateRoutes(dest, reports, infrastructure, origin));
+        const calculatedRoutes = await generateRoutes(dest, reports, infrastructure, origin);
+        setRoutes(calculatedRoutes);
         setSelectedRoute(null);
       } catch (err) {
         setSearchError(err instanceof Error ? err.message : "Couldn't compute safe routes. Please try again.");

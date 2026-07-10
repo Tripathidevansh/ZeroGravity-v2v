@@ -15,7 +15,12 @@ export const ROUTES = {
   ROUTE_DETAILS: "/routes/:routeId",
   NOTIFICATIONS: "/notifications",
   EMERGENCY: "/emergency",
+  EMERGENCY_TRACKING: "/track/:trackingToken",
 } as const;
+
+export function emergencyTrackingPath(trackingToken: string) {
+  return `/track/${trackingToken}`;
+}
 
 export function routeDetailsPath(routeId: string) {
   return `/routes/${routeId}`;

@@ -1,6 +1,7 @@
-import { Navigation2, Clock, MapPin, PartyPopper } from "lucide-react";
+import { Navigation2, Clock, MapPin, PartyPopper, LocateFixed } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import { MapView } from "@/components/shared/MapView";
 import { WSIScore } from "@/components/shared/WSIScore";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -10,13 +11,15 @@ import { useReports } from "@/features/community-reports/api/useReports";
 import { useNearbyPlaces } from "@/services/infrastructureService";
 import { EmergencySOSButton } from "@/features/emergency-sos/components/EmergencySOSButton";
 import { useJourneySimulation } from "@/features/journey-mode/hooks/useJourneySimulation";
+import { useLiveJourneyTracking } from "@/features/journey-mode/hooks/useLiveJourneyTracking";
 import { formatDistanceKm, formatDurationMin } from "@/utils/formatting";
 import type { RouteOption } from "@/features/route-recommendation/types";
 
 export interface JourneyActiveViewProps {
   route: RouteOption;
   /** The persisted journey row's id, if the journey started successfully —
-   * links an Emergency SOS triggered here to this journey. */
+   * links an Emergency SOS triggered here to this journey, and is required
+   * for live GPS tracking to persist updates. */
   journeyId?: string | null;
   /** Called when the journey ends — `completed` is true on natural arrival,
    * false when the user manually ends the journey early. */
@@ -28,6 +31,10 @@ export function JourneyActiveView({ route, journeyId = null, onEndJourney }: Jou
   const routeMidpoint = route.path[Math.floor(route.path.length / 2)];
   const { data: infrastructure } = useNearbyPlaces(routeMidpoint);
   const sim = useJourneySimulation(route, reports ?? []);
+  // Starts watching real GPS the moment this view mounts (journey active);
+  // the browser watch is cleared automatically when journeyId becomes null
+  // or this component unmounts (journey ended).
+  const { position: livePosition } = useLiveJourneyTracking(journeyId);
   const nearbyPlaces = getNearbyPlaces(route, infrastructure ?? []);
   const timeline = getRouteTimeline(route);
   const markers = nearbyPlaces.map((p) => ({ id: p.id, type: p.type, name: p.name, lat: p.lat, lng: p.lng }));
@@ -51,14 +58,23 @@ export function JourneyActiveView({ route, journeyId = null, onEndJourney }: Jou
     <div className="grid gap-5 lg:grid-cols-3">
       <div className="flex flex-col gap-5 lg:col-span-2">
         <Card className="p-0 overflow-hidden">
-          <MapView
-            center={route.path[Math.floor(route.path.length / 2)]}
-            routePath={route.path}
-            wsi={route.wsi}
-            markers={markers}
-            heightClassName="h-64 sm:h-80"
-            className="rounded-none border-0"
-          />
+          <div className="relative">
+            {livePosition && (
+              <Badge variant="primary" className="absolute left-3 top-3 z-10 gap-1.5">
+                <LocateFixed size={12} className="animate-pulse" />
+                Live GPS
+              </Badge>
+            )}
+            <MapView
+              center={route.path[Math.floor(route.path.length / 2)]}
+              routePath={route.path}
+              wsi={route.wsi}
+              markers={markers}
+              livePosition={livePosition}
+              heightClassName="h-64 sm:h-80"
+              className="rounded-none border-0"
+            />
+          </div>
         </Card>
 
         <div className="grid grid-cols-3 gap-3">

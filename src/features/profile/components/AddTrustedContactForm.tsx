@@ -15,21 +15,25 @@ export function AddTrustedContactForm({ onSubmitted }: AddTrustedContactFormProp
   const [name, setName] = useState("");
   const [relation, setRelation] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !relation.trim() || !phone.trim()) return;
 
     try {
-      await createContact.mutateAsync({ name, relation, phone });
+      await createContact.mutateAsync({ name, relation, phone, email: email.trim() || undefined });
       showToast({
         variant: "success",
         title: "Trusted contact added",
-        description: `${name} will be notified during an emergency alert.`,
+        description: email.trim()
+          ? `${name} will be emailed during an emergency alert.`
+          : `${name} was added, but won't receive emergency emails without an address on file.`,
       });
       setName("");
       setRelation("");
       setPhone("");
+      setEmail("");
       onSubmitted?.();
     } catch (err) {
       showToast({
@@ -57,6 +61,14 @@ export function AddTrustedContactForm({ onSubmitted }: AddTrustedContactFormProp
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
         required
+      />
+      <Input
+        type="email"
+        label="Email"
+        placeholder="jane@example.com"
+        hint="Required to receive emergency alert emails."
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
       />
       <Button type="submit" isLoading={createContact.isPending} className="mt-2 w-full">
         Add contact

@@ -103,12 +103,27 @@ export interface Database {
           status: JourneyStatusRow;
           started_at: string;
           completed_at: string | null;
+          current_lat: number | null;
+          current_lng: number | null;
+          current_heading: number | null;
+          current_speed: number | null;
+          current_accuracy: number | null;
+          location_updated_at: string | null;
         };
-        Insert: Omit<Database["public"]["Tables"]["journeys"]["Row"], "id" | "started_at" | "completed_at" | "status"> & {
+        Insert: Omit<
+          Database["public"]["Tables"]["journeys"]["Row"],
+          "id" | "started_at" | "completed_at" | "status" | "current_lat" | "current_lng" | "current_heading" | "current_speed" | "current_accuracy" | "location_updated_at"
+        > & {
           id?: string;
           started_at?: string;
           completed_at?: string | null;
           status?: JourneyStatusRow;
+          current_lat?: number | null;
+          current_lng?: number | null;
+          current_heading?: number | null;
+          current_speed?: number | null;
+          current_accuracy?: number | null;
+          location_updated_at?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["journeys"]["Row"]>;
         Relationships: [];
@@ -138,12 +153,14 @@ export interface Database {
           name: string;
           relation: string;
           phone: string;
+          email: string | null;
           is_emergency_contact: boolean;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["trusted_contacts"]["Row"], "id" | "created_at"> & {
+        Insert: Omit<Database["public"]["Tables"]["trusted_contacts"]["Row"], "id" | "created_at" | "email"> & {
           id?: string;
           created_at?: string;
+          email?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["trusted_contacts"]["Row"]>;
         Relationships: [];
@@ -160,10 +177,35 @@ export interface Database {
           lng: number;
           timeline: { at: string; label: string }[];
           notified_contacts: { contactId: string; name: string; status: string; sentAt: string }[];
+          tracking_token: string;
+          destination_name: string | null;
+          destination_lat: number | null;
+          destination_lng: number | null;
+          route_label: string | null;
+          wsi_score: number | null;
+          journey_status: string | null;
+          battery_level: number | null;
+          address: string | null;
+          current_lat: number | null;
+          current_lng: number | null;
+          current_heading: number | null;
+          current_speed: number | null;
+          location_updated_at: string | null;
         };
         Insert: Omit<
           Database["public"]["Tables"]["emergency_events"]["Row"],
-          "id" | "status" | "triggered_at" | "resolved_at" | "timeline" | "notified_contacts"
+          | "id"
+          | "status"
+          | "triggered_at"
+          | "resolved_at"
+          | "timeline"
+          | "notified_contacts"
+          | "tracking_token"
+          | "current_lat"
+          | "current_lng"
+          | "current_heading"
+          | "current_speed"
+          | "location_updated_at"
         > & {
           id?: string;
           status?: "active" | "resolved";
@@ -171,6 +213,12 @@ export interface Database {
           resolved_at?: string | null;
           timeline?: { at: string; label: string }[];
           notified_contacts?: { contactId: string; name: string; status: string; sentAt: string }[];
+          tracking_token?: string;
+          current_lat?: number | null;
+          current_lng?: number | null;
+          current_heading?: number | null;
+          current_speed?: number | null;
+          location_updated_at?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["emergency_events"]["Row"]>;
         Relationships: [];

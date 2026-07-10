@@ -122,7 +122,7 @@ export function ReportIncidentForm({ onSubmitted }: ReportIncidentFormProps) {
         {imageFile ? (
           <div className="flex items-center justify-between rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface-raised)] px-3.5 py-2.5 text-sm text-neutral-300">
             <span className="truncate">{imageFile.name}</span>
-            <button type="button" onClick={() => setImageFile(null)} className="text-neutral-500 hover:text-neutral-100">
+            <button type="button" onClick={() => setImageFile(null)} aria-label="Remove photo" className="text-neutral-500 hover:text-neutral-100">
               <X size={16} />
             </button>
           </div>

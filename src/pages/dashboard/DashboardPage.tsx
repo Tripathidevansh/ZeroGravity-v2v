@@ -104,7 +104,7 @@ export default function DashboardPage() {
     <PageWrapper className="py-0">
       {/* Hero */}
       <div
-        className="relative mb-6 overflow-hidden rounded-2xl border border-[var(--color-border-subtle)] px-6 py-10 sm:px-10 sm:py-12"
+        className="relative mb-6 rounded-2xl border border-[var(--color-border-subtle)] px-6 py-10 sm:px-10 sm:py-12"
         style={{ backgroundImage: "var(--gradient-hero)", backgroundColor: "var(--color-bg-surface)" }}
       >
         <p className="text-lg text-neutral-300 sm:text-xl">{getGreeting()} 👋</p>

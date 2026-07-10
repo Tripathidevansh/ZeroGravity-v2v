@@ -44,9 +44,9 @@ export function Footer() {
         {FOOTER_LINKS.map((group) => (
           <div key={group.heading}>
             <h4 className="text-sm font-semibold text-neutral-200">{group.heading}</h4>
-            <ul className="mt-3 flex flex-col gap-2">
+            <ul className="mt-3 flex flex-col gap-2 list-none p-0 m-0 text-left">
               {group.links.map((link) => (
-                <li key={link.label}>
+                <li key={link.label} className="p-0 m-0 text-left">
                   <a href={link.href} className="text-sm text-neutral-500 hover:text-neutral-200">
                     {link.label}
                   </a>

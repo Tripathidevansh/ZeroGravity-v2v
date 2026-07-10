@@ -117,7 +117,7 @@ export default function ProfilePage() {
                 trustedContacts.map((contact) => (
                   <TrustedContactItem
                     key={contact.id}
-                    contact={{ id: contact.id, name: contact.name, relation: contact.relation, phone: contact.phone }}
+                    contact={{ id: contact.id, name: contact.name, relation: contact.relation, phone: contact.phone, email: contact.email }}
                   />
                 ))
               )}

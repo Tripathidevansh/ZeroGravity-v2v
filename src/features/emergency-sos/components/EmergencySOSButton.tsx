@@ -8,6 +8,7 @@ import { useToast } from "@/contexts/ToastContext";
 import { useActivateEmergency } from "@/features/emergency-sos/api/useEmergency";
 import { fetchNearbyPlaces } from "@/services/infrastructureService";
 import { findNearestByType } from "@/features/emergency-sos/utils";
+import { fetchActiveJourney } from "@/features/journey-mode/api/journeysService";
 import { getCurrentPosition } from "@/utils/geolocation";
 import { ROUTES } from "@/routes/paths";
 
@@ -38,12 +39,24 @@ export function EmergencySOSButton({ variant = "inline", journeyId = null, class
       const nearestPolice = findNearestByType(location, nearby, "police");
       const nearestHospital = findNearestByType(location, nearby, "hospital");
 
+      // If SOS is triggered during an active journey, pull its destination,
+      // route label, live WSI, and status into the emergency record —
+      // fetched fresh so it reflects the journey's current state, not a
+      // stale value from whenever this button happened to render.
+      const activeJourney = journeyId ? await fetchActiveJourney() : null;
+
       await activateEmergency.mutateAsync({
         lat: location.lat,
         lng: location.lng,
         journeyId,
         nearestPoliceName: nearestPolice?.name,
         nearestHospitalName: nearestHospital?.name,
+        destinationName: activeJourney?.destination_name ?? null,
+        destinationLat: activeJourney?.destination_lat ?? null,
+        destinationLng: activeJourney?.destination_lng ?? null,
+        routeLabel: activeJourney ? "Active route" : null,
+        wsiScore: activeJourney?.wsi_score ?? null,
+        journeyStatus: activeJourney?.status ?? null,
       });
 
       navigate(ROUTES.EMERGENCY);

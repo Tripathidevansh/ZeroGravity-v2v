@@ -23,8 +23,8 @@ export function Switch({ checked, onChange, label, disabled }: SwitchProps) {
     >
       <span
         className={cn(
-          "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-[var(--shadow-soft)] transition-transform",
-          checked ? "translate-x-[22px]" : "translate-x-0.5"
+          "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-[var(--shadow-soft)] transition-transform",
+          checked ? "translate-x-5" : "translate-x-0"
         )}
       />
     </button>

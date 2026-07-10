@@ -3,4 +3,5 @@ export interface TrustedContact {
   name: string;
   relation: string;
   phone: string;
+  email?: string | null;
 }

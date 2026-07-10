@@ -14,6 +14,7 @@ import RouteResultsPage from "@/pages/routes/RouteResultsPage";
 import RouteDetailsPage from "@/pages/routes/RouteDetailsPage";
 import NotificationsPage from "@/pages/notifications/NotificationsPage";
 import EmergencyDashboardPage from "@/pages/emergency/EmergencyDashboardPage";
+import EmergencyTrackingPage from "@/pages/tracking/EmergencyTrackingPage";
 import NotFoundPage from "@/pages/not-found/NotFoundPage";
 import { ROUTES } from "@/routes/paths";
 
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.LOGIN, element: <LoginPage /> },
       { path: ROUTES.SIGNUP, element: <SignupPage /> },
       { path: ROUTES.FORGOT_PASSWORD, element: <ForgotPasswordPage /> },
+      { path: ROUTES.EMERGENCY_TRACKING, element: <EmergencyTrackingPage /> },
     ],
   },
   {

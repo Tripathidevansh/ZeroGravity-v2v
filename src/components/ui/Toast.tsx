@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { CheckCircle2, AlertTriangle, XCircle, Info, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -20,6 +21,14 @@ const VARIANT_CONFIG: Record<ToastVariant, { icon: typeof Info; className: strin
 
 export function Toast({ id, title, description, variant = "info", onDismiss }: ToastProps) {
   const { icon: Icon, className } = VARIANT_CONFIG[variant];
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onDismiss(id);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [id, onDismiss]);
 
   return (
     <div
