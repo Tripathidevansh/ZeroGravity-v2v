@@ -40,7 +40,7 @@ export function SOSCountdown() {
         Emergency voice trigger detected. Activating SOS in {countdown} seconds. Say stop or click cancel to abort.
       </div>
 
-      <div className="relative flex w-full max-w-md flex-col items-center rounded-2xl border border-red-500/20 bg-neutral-900/80 p-8 text-center shadow-[0_0_50px_rgba(239,68,68,0.2)] backdrop-blur-md">
+      <div className="relative flex w-full max-w-md flex-col items-center rounded-2xl border border-red-500/20 bg-neutral-900/80 p-6 sm:p-8 text-center shadow-[0_0_50px_rgba(239,68,68,0.2)] backdrop-blur-md">
         <span className="absolute inset-0 -z-10 animate-pulse rounded-2xl bg-red-500/5 opacity-5" />
 
         <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-red-500 animate-bounce">

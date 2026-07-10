@@ -93,7 +93,7 @@ export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
       </div>
 
       {isMobileOpen && (
-        <div className="mx-auto mt-2 w-full max-w-7xl rounded-2xl glass-panel px-4 py-4 md:hidden">
+        <div className="mx-auto mt-2 w-full max-w-7xl rounded-2xl glass-panel px-4 py-4 md:hidden max-h-[calc(100vh-6rem)] overflow-y-auto">
           <nav className="flex flex-col gap-1">
             {navItems.map((item) => (
               <NavLink

@@ -18,7 +18,7 @@ export function AuthenticatedLayout() {
         <Navbar navItems={AUTH_NAV_ITEMS} isAuthenticated />
         <div className="flex flex-1">
           <Sidebar />
-          <main className="flex-1 pb-20 md:pb-0">
+          <main className="flex-1 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-0">
             <Container className="py-6">
               <AnimatePresence mode="wait">
                 <motion.div

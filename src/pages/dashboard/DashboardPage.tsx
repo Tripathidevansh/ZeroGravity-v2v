@@ -143,7 +143,7 @@ export default function DashboardPage() {
               <ShieldCheck size={18} />
             </span>
           </CardHeader>
-          <CardContent className="flex items-center gap-6">
+          <CardContent className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left">
             {locationUnavailable ? (
               <EmptyState
                 icon={<LocateFixed size={28} />}

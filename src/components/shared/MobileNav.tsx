@@ -12,7 +12,7 @@ const MOBILE_NAV_ITEMS = [
 
 export function MobileNav() {
   return (
-    <nav className="fixed inset-x-3 bottom-3 z-40 flex justify-around rounded-2xl glass-panel px-2 py-2 md:hidden">
+    <nav className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-40 flex justify-around rounded-2xl glass-panel px-2 py-2 md:hidden">
       {MOBILE_NAV_ITEMS.map(({ label, path, icon: Icon }) => (
         <NavLink
           key={path}

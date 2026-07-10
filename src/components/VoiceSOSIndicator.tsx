@@ -11,7 +11,7 @@ export function VoiceSOSIndicator() {
   return (
     <div
       className={cn(
-        "fixed bottom-24 left-5 z-40 flex items-center gap-2 rounded-full px-3 py-1.5",
+        "fixed bottom-[calc(6.5rem+env(safe-area-inset-bottom))] left-5 z-40 flex items-center gap-2 rounded-full px-3 py-1.5",
         "border border-white/10 bg-neutral-900/75 backdrop-blur-md shadow-lg transition-all duration-300",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500",
         "md:bottom-6 md:left-6"
