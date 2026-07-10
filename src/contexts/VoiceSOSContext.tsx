@@ -34,7 +34,7 @@ export function VoiceSOSProvider({ children }: { children: React.ReactNode }) {
   const { data: activeEmergency } = useActiveEmergency();
 
   const [isVoiceSOSActive, setIsVoiceSOSActive] = useState<boolean>(() => {
-    return localStorage.getItem("voice_sos_active") === "true";
+    return localStorage.getItem("voice_sos_active") !== "false";
   });
   const [isListening, setIsListening] = useState(false);
   const [permissionStatus, setPermissionStatus] = useState<PermissionState>(() => {
@@ -326,15 +326,16 @@ export function VoiceSOSProvider({ children }: { children: React.ReactNode }) {
           setIsVoiceSOSActive(false);
           localStorage.setItem("voice_sos_active", "false");
         } else {
-          // If prompt, let user enable it explicitly
+          // If prompt, automatically request permission when visiting the site
           setPermissionStatus("prompt");
+          enableVoiceSOS();
         }
       }).catch(() => {
         // Fallback for browsers that don't support permission query
-        startRecognition();
+        enableVoiceSOS();
       });
     }
-  }, [isVoiceSOSActive, startRecognition]);
+  }, [isVoiceSOSActive, startRecognition, enableVoiceSOS]);
 
   return (
     <VoiceSOSContext.Provider
