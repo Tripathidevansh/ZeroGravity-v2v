@@ -25,10 +25,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             id={selectId}
             aria-invalid={!!error}
             className={cn(
-              "h-11 w-full appearance-none rounded-[--radius-md] border bg-[--color-bg-surface-raised] px-3.5 pr-9 text-sm text-neutral-50",
+              "h-11 w-full appearance-none rounded-md border bg-[var(--color-bg-surface-raised)] px-3.5 pr-9 text-sm text-neutral-50",
               "outline-none transition-colors",
               "focus:border-primary-400 focus:ring-2 focus:ring-primary-500/30",
-              error ? "border-risk-500" : "border-[--color-border-default]",
+              error ? "border-risk-500" : "border-[var(--color-border-default)]",
               className
             )}
             {...props}

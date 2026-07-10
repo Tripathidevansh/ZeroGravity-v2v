@@ -13,7 +13,7 @@ export function ReportCard({ report }: { report: CommunityReport }) {
   return (
     <Card>
       <div className="flex items-start gap-4">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[--radius-md] bg-[--color-bg-surface-raised] text-neutral-300">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[var(--color-bg-surface-raised)] text-neutral-300">
           <Icon size={18} />
         </span>
         <div className="min-w-0 flex-1">

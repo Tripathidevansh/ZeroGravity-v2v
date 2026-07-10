@@ -36,8 +36,8 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
       />
       <div
         className={cn(
-          "relative w-full max-w-md rounded-[--radius-xl] border border-[--color-border-subtle]",
-          "bg-[--color-bg-surface-raised] p-6 shadow-[var(--shadow-elevated)]",
+          "relative w-full max-w-md rounded-xl border border-[var(--color-border-subtle)]",
+          "bg-[var(--color-bg-surface-raised)] p-6 shadow-[var(--shadow-elevated)]",
           className
         )}
       >
@@ -46,7 +46,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
           <button
             onClick={onClose}
             aria-label="Close dialog"
-            className="ml-auto rounded-[--radius-sm] p-1.5 text-neutral-400 hover:bg-white/5 hover:text-neutral-100"
+            className="ml-auto rounded-sm p-1.5 text-neutral-400 hover:bg-white/5 hover:text-neutral-100"
           >
             <X size={18} />
           </button>

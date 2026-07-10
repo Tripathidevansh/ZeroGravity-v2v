@@ -12,15 +12,15 @@ const MOBILE_NAV_ITEMS = [
 
 export function MobileNav() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-[--color-border-subtle] bg-[--color-bg-base]/95 backdrop-blur md:hidden">
+    <nav className="fixed inset-x-3 bottom-3 z-40 flex justify-around rounded-2xl glass-panel px-2 py-2 md:hidden">
       {MOBILE_NAV_ITEMS.map(({ label, path, icon: Icon }) => (
         <NavLink
           key={path}
           to={path}
           className={({ isActive }) =>
             cn(
-              "flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-neutral-500",
-              isActive && "text-primary-400"
+              "flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-[11px] font-medium text-neutral-500 transition-colors",
+              isActive && "bg-white/[0.06] text-primary-400"
             )
           }
         >

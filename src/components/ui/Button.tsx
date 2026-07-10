@@ -12,19 +12,19 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const VARIANT_STYLES: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary-500 text-white hover:bg-primary-600 focus-visible:outline-primary-400 shadow-[var(--shadow-glow-primary)]",
+    "bg-[image:var(--gradient-primary)] text-white shadow-[var(--shadow-glow-primary)] hover:brightness-110 hover:shadow-[0_0_0_1px_rgba(124,58,237,0.35),0_0_32px_rgba(124,58,237,0.45),0_10px_36px_rgba(124,58,237,0.28)] active:brightness-95",
   secondary:
-    "bg-secondary-500 text-white hover:bg-secondary-600 focus-visible:outline-secondary-400",
+    "bg-secondary-500 text-white hover:bg-secondary-600 shadow-[var(--shadow-glow-accent)]",
   outline:
-    "border border-[--color-border-default] text-neutral-100 hover:bg-[--color-bg-surface-raised] focus-visible:outline-neutral-400",
-  ghost: "text-neutral-200 hover:bg-[--color-bg-surface-raised] focus-visible:outline-neutral-400",
-  danger: "bg-risk-500 text-white hover:bg-red-600 focus-visible:outline-red-400",
+    "border border-[var(--color-border-default)] text-neutral-100 bg-white/[0.02] hover:bg-white/[0.06] hover:border-primary-400/50",
+  ghost: "text-neutral-300 hover:bg-white/[0.06] hover:text-neutral-50",
+  danger: "bg-risk-500 text-white hover:bg-red-600 shadow-[var(--shadow-glow-risk)]",
 };
 
 const SIZE_STYLES: Record<ButtonSize, string> = {
-  sm: "h-9 px-3 text-sm rounded-[--radius-sm]",
-  md: "h-11 px-5 text-sm rounded-[--radius-md]",
-  lg: "h-13 px-6 text-base rounded-[--radius-lg]",
+  sm: "h-9 px-3.5 text-sm rounded-lg",
+  md: "h-11 px-5 text-sm rounded-xl",
+  lg: "h-13 px-7 text-base rounded-xl",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -37,9 +37,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || isLoading}
         className={cn(
-          "inline-flex items-center justify-center gap-2 font-medium transition-colors",
-          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
-          "disabled:opacity-50 disabled:cursor-not-allowed",
+          "inline-flex items-center justify-center gap-2 font-medium transition-all duration-200",
+          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400",
+          "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:shadow-none",
+          "active:scale-[0.98]",
           VARIANT_STYLES[variant],
           SIZE_STYLES[size],
           className

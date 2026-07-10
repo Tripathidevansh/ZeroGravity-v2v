@@ -83,10 +83,10 @@ export function ReportIncidentForm({ onSubmitted }: ReportIncidentFormProps) {
               type="button"
               onClick={() => setSeverity(opt.value)}
               className={cn(
-                "flex-1 rounded-[--radius-md] border px-3 py-2 text-sm font-medium transition-colors",
+                "flex-1 rounded-md border px-3 py-2 text-sm font-medium transition-colors",
                 severity === opt.value
                   ? "border-primary-500/40 bg-primary-500/10 text-primary-300"
-                  : "border-[--color-border-default] text-neutral-400 hover:text-neutral-100"
+                  : "border-[var(--color-border-default)] text-neutral-400 hover:text-neutral-100"
               )}
             >
               {opt.label}
@@ -105,7 +105,7 @@ export function ReportIncidentForm({ onSubmitted }: ReportIncidentFormProps) {
           onChange={(e) => setImageName(e.target.files?.[0]?.name ?? null)}
         />
         {imageName ? (
-          <div className="flex items-center justify-between rounded-[--radius-md] border border-[--color-border-default] bg-[--color-bg-surface-raised] px-3.5 py-2.5 text-sm text-neutral-300">
+          <div className="flex items-center justify-between rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface-raised)] px-3.5 py-2.5 text-sm text-neutral-300">
             <span className="truncate">{imageName}</span>
             <button type="button" onClick={() => setImageName(null)} className="text-neutral-500 hover:text-neutral-100">
               <X size={16} />
@@ -115,7 +115,7 @@ export function ReportIncidentForm({ onSubmitted }: ReportIncidentFormProps) {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center justify-center gap-2 rounded-[--radius-md] border border-dashed border-[--color-border-default] px-3.5 py-3 text-sm text-neutral-500 transition-colors hover:border-primary-400 hover:text-primary-300"
+            className="flex items-center justify-center gap-2 rounded-md border border-dashed border-[var(--color-border-default)] px-3.5 py-3 text-sm text-neutral-500 transition-colors hover:border-primary-400 hover:text-primary-300"
           >
             <ImagePlus size={16} />
             Add a photo

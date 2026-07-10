@@ -17,9 +17,60 @@ frontend experience on mock data** — every screen, every flow, no backend.
 - Supabase-ready service layer (`src/services/supabaseClient.ts`, unwired)
 - lucide-react icons, clsx + tailwind-merge for class composition
 
+## Getting started
+
+```bash
+npm install
+npm run dev      # start dev server
+npm run build    # production build (type-checks first)
+```
 
 Deploys as a static Vite app — works out of the box on Vercel.
 
+## Folder structure
+
+```
+src/
+  components/
+    ui/        # atomic, style-only primitives (Button, Card, Input, Badge, Modal, Toast, ...)
+    shared/     # composed, app-aware pieces (Navbar, Sidebar, Footer, SearchBar, ...)
+  features/     # empty in Phase 1 — see features/README.md for the convention
+  pages/        # route-level screens, grouped by page (landing/, auth/, dashboard/, ...)
+  hooks/        # reusable, feature-agnostic hooks (useMediaQuery, useLocalStorage)
+  services/     # external service clients (Supabase placeholder lives here)
+  contexts/     # cross-cutting React context providers (ToastContext)
+  layouts/      # PublicLayout, AuthenticatedLayout — compose Navbar/Sidebar/Footer + <Outlet />
+  lib/          # small framework glue (cn(), queryClient)
+  types/        # shared, cross-feature TypeScript types
+  routes/       # route path constants + the router definition
+  utils/        # constants and pure helpers
+  styles/       # reserved for future global style modules
+```
+
+## Routing
+
+| Route              | Layout              | Page                  |
+|---------------------|----------------------|-----------------------|
+| `/`                  | Public               | Landing               |
+| `/login`             | Public               | Login                 |
+| `/signup`            | Public               | Signup                |
+| `/forgot-password`   | Public               | Forgot Password       |
+| `/dashboard`         | Authenticated        | Dashboard shell        |
+| `/reports`           | Authenticated        | Reports shell          |
+| `/journey`           | Authenticated        | Journey shell          |
+| `/profile`           | Authenticated        | Profile shell          |
+| `*`                  | —                    | 404                    |
+
+Route strings are never hardcoded — always import `ROUTES` from `src/routes/paths.ts`.
+
+There are no auth guards yet; that lands with real Supabase auth in a later phase.
+
+## Design tokens
+
+Defined in `src/index.css` under `@theme`: primary (purple), secondary (blue),
+safe/caution/risk semantic colors, neutral (slate), dark-theme surface colors,
+radius scale, and shadow tokens. Typography pairs **Space Grotesk** (display)
+with **Inter** (body).
 
 ## What's intentionally NOT here yet
 

@@ -29,7 +29,7 @@ const FOOTER_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-[--color-border-subtle] bg-[--color-bg-surface]">
+    <footer className="border-t border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)]">
       <Container className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <Link to="/" className="flex items-center gap-2 font-display text-lg font-semibold text-neutral-50">
@@ -56,7 +56,7 @@ export function Footer() {
           </div>
         ))}
       </Container>
-      <div className="border-t border-[--color-border-subtle] py-6 text-center text-xs text-neutral-600">
+      <div className="border-t border-[var(--color-border-subtle)] py-6 text-center text-xs text-neutral-600">
         © {new Date().getFullYear()} {APP_NAME}. All rights reserved.
       </div>
     </footer>

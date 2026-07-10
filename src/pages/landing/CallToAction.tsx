@@ -8,7 +8,7 @@ export function CallToAction() {
   return (
     <section className="py-20">
       <Container>
-        <div className="flex flex-col items-center gap-6 rounded-[--radius-2xl] border border-primary-500/20 bg-gradient-to-br from-primary-500/10 via-transparent to-secondary-500/10 px-6 py-14 text-center">
+        <div className="flex flex-col items-center gap-6 rounded-2xl border border-primary-500/20 bg-gradient-to-br from-primary-500/10 via-transparent to-secondary-500/10 px-6 py-14 text-center">
           <h2 className="max-w-xl text-2xl font-semibold text-neutral-50 sm:text-3xl">
             Ready to travel the safer way?
           </h2>

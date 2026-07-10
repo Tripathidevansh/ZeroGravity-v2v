@@ -75,7 +75,7 @@ export default function ProfilePage() {
                 <CardDescription>Your past trips and their safety scores</CardDescription>
               </div>
             </CardHeader>
-            <CardContent className="flex flex-col divide-y divide-[--color-border-subtle]">
+            <CardContent className="flex flex-col divide-y divide-[var(--color-border-subtle)]">
               {JOURNEY_HISTORY.map((journey) => (
                 <div key={journey.id} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
                   <div className="min-w-0">
@@ -98,7 +98,7 @@ export default function ProfilePage() {
               </div>
               <SettingsIcon className="text-neutral-500" size={18} />
             </CardHeader>
-            <CardContent className="flex flex-col divide-y divide-[--color-border-subtle]">
+            <CardContent className="flex flex-col divide-y divide-[var(--color-border-subtle)]">
               {INITIAL_SETTINGS.map((setting) => (
                 <SettingsRow
                   key={setting.key}
@@ -145,8 +145,8 @@ export default function ProfilePage() {
               {SAVED_LOCATIONS.map((loc) => {
                 const Icon = LOCATION_CATEGORY_ICON[loc.category];
                 return (
-                  <div key={loc.id} className="flex items-center gap-3 rounded-[--radius-md] px-2 py-2 hover:bg-[--color-bg-surface-raised]">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[--radius-sm] bg-primary-500/10 text-primary-400">
+                  <div key={loc.id} className="flex items-center gap-3 rounded-md px-2 py-2 hover:bg-[var(--color-bg-surface-raised)]">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-primary-500/10 text-primary-400">
                       <Icon size={14} />
                     </span>
                     <div className="min-w-0">

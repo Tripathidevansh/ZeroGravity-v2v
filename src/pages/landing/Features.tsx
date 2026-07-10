@@ -40,7 +40,7 @@ export function Features() {
           {FEATURES.map(({ icon: Icon, title, description }) => (
             <Card key={title}>
               <CardHeader>
-                <span className="flex h-10 w-10 items-center justify-center rounded-[--radius-md] bg-primary-500/10 text-primary-400">
+                <span className="flex h-10 w-10 items-center justify-center rounded-md bg-primary-500/10 text-primary-400">
                   <Icon size={20} />
                 </span>
               </CardHeader>

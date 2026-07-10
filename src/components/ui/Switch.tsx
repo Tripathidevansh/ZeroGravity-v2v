@@ -18,7 +18,7 @@ export function Switch({ checked, onChange, label, disabled }: SwitchProps) {
       onClick={() => onChange(!checked)}
       className={cn(
         "relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-50",
-        checked ? "bg-primary-500" : "bg-[--color-bg-surface-raised] border border-[--color-border-default]"
+        checked ? "bg-primary-500" : "bg-[var(--color-bg-surface-raised)] border border-[var(--color-border-default)]"
       )}
     >
       <span

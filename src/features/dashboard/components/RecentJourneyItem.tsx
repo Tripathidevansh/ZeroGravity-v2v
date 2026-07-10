@@ -5,8 +5,8 @@ import type { RecentJourney } from "@/features/dashboard/mockData";
 
 export function RecentJourneyItem({ journey }: { journey: RecentJourney }) {
   return (
-    <div className="flex items-center gap-3 rounded-[--radius-md] px-2 py-2 hover:bg-[--color-bg-surface-raised]">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[--radius-md] bg-[--color-bg-surface-raised] text-neutral-400">
+    <div className="flex items-center gap-3 rounded-md px-2 py-2 hover:bg-[var(--color-bg-surface-raised)]">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--color-bg-surface-raised)] text-neutral-400">
         <Navigation size={16} />
       </span>
       <div className="min-w-0 flex-1">

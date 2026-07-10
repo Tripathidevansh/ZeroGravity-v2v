@@ -48,7 +48,7 @@ export function MapView({
         center={center}
         routePath={routePath}
         markers={markers}
-        className={cn("rounded-[--radius-xl] overflow-hidden", heightClassName, className)}
+        className={cn("rounded-xl overflow-hidden", heightClassName, className)}
       />
     );
   }
@@ -59,7 +59,7 @@ export function MapView({
       routePath={routePath}
       wsi={wsi}
       markers={markers}
-      className={cn("rounded-[--radius-xl] overflow-hidden", heightClassName, className)}
+      className={cn("rounded-xl overflow-hidden", heightClassName, className)}
     />
   );
 }
@@ -180,7 +180,7 @@ function MockMap({
   return (
     <div
       className={cn(
-        "relative bg-[--color-bg-surface-raised] border border-[--color-border-subtle]",
+        "relative bg-[var(--color-bg-surface-raised)] border border-[var(--color-border-subtle)]",
         className
       )}
     >
@@ -229,7 +229,7 @@ function MockMap({
         })}
       </svg>
 
-      <div className="pointer-events-none absolute bottom-3 left-3 rounded-[--radius-sm] bg-black/40 px-2 py-1 text-[10px] text-neutral-400 backdrop-blur">
+      <div className="pointer-events-none absolute bottom-3 left-3 rounded-sm bg-black/40 px-2 py-1 text-[10px] text-neutral-400 backdrop-blur">
         Mock map preview — connect a Mapbox token for live tiles
       </div>
     </div>

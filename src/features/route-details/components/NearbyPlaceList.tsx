@@ -13,8 +13,8 @@ export function NearbyPlaceList({ places }: { places: NearbyPlace[] }) {
       {places.map((place) => {
         const { icon: Icon, className } = TYPE_CONFIG[place.type];
         return (
-          <li key={place.id} className="flex items-center gap-3 rounded-[--radius-md] px-2 py-2 hover:bg-[--color-bg-surface-raised]">
-            <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[--radius-md] ${className}`}>
+          <li key={place.id} className="flex items-center gap-3 rounded-md px-2 py-2 hover:bg-[var(--color-bg-surface-raised)]">
+            <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${className}`}>
               <Icon size={16} />
             </span>
             <div className="min-w-0 flex-1">

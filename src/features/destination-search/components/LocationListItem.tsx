@@ -13,9 +13,9 @@ export function LocationListItem({ location, onSelect }: LocationListItemProps) 
     <button
       type="button"
       onClick={() => onSelect(location)}
-      className="flex w-full items-center gap-3 rounded-[--radius-md] px-3 py-2.5 text-left transition-colors hover:bg-[--color-bg-surface-raised]"
+      className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-[var(--color-bg-surface-raised)]"
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[--radius-md] bg-primary-500/10 text-primary-400">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary-500/10 text-primary-400">
         <Icon size={16} />
       </span>
       <span className="min-w-0">

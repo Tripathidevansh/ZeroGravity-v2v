@@ -13,7 +13,7 @@ export default function NotificationsPage() {
         title="Notifications"
         description={unreadCount > 0 ? `${unreadCount} unread` : "You're all caught up"}
       />
-      <Card className="divide-y divide-[--color-border-subtle] p-2">
+      <Card className="divide-y divide-[var(--color-border-subtle)] p-2">
         {NOTIFICATIONS.map((notification) => (
           <NotificationItem key={notification.id} notification={notification} />
         ))}

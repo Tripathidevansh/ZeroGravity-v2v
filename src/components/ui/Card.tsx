@@ -1,17 +1,33 @@
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
-export function Card({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  /** "glass" adds a translucent, blurred, glowing-border premium surface. Default is a solid dark card. */
+  variant?: "solid" | "glass";
+  /** Adds a soft radial brand-color glow bleeding from a corner — use sparingly, on hero/feature cards. */
+  glow?: boolean;
+}
+
+export function Card({ className, children, variant = "solid", glow = false, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        "rounded-[--radius-xl] border border-[--color-border-subtle] bg-[--color-bg-surface] p-6",
-        "shadow-[var(--shadow-soft)]",
+        "relative overflow-hidden rounded-xl p-6 transition-shadow duration-300",
+        variant === "solid" &&
+          "border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface-raised)] shadow-[var(--shadow-soft)]",
+        variant === "glass" && "glass-panel",
         className
       )}
       {...props}
     >
-      {children}
+      {glow && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full opacity-60 blur-3xl"
+          style={{ backgroundImage: "var(--gradient-radial-fade)" }}
+        />
+      )}
+      <div className="relative">{children}</div>
     </div>
   );
 }
@@ -26,7 +42,7 @@ export function CardHeader({ className, children, ...props }: HTMLAttributes<HTM
 
 export function CardTitle({ className, children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
   return (
-    <h3 className={cn("text-base font-semibold text-neutral-50", className)} {...props}>
+    <h3 className={cn("text-base font-semibold tracking-tight text-neutral-50", className)} {...props}>
       {children}
     </h3>
   );

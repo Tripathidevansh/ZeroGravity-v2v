@@ -17,22 +17,24 @@ export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[--color-border-subtle] bg-[--color-bg-base]/85 backdrop-blur">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 px-3 pt-3 sm:px-5 sm:pt-4">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between rounded-2xl glass-panel px-4 sm:px-6">
         <Link to={ROUTES.HOME} className="flex items-center gap-2 font-display text-lg font-semibold text-neutral-50">
-          <ShieldCheck className="text-primary-400" size={22} />
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[image:var(--gradient-primary-accent)] shadow-[var(--shadow-glow-primary)]">
+            <ShieldCheck className="text-white" size={17} />
+          </span>
           {APP_NAME}
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-1 md:flex">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
                 cn(
-                  "text-sm font-medium text-neutral-400 transition-colors hover:text-neutral-100",
-                  isActive && "text-neutral-50"
+                  "rounded-lg px-3.5 py-2 text-sm font-medium text-neutral-400 transition-colors hover:bg-white/[0.05] hover:text-neutral-100",
+                  isActive && "bg-white/[0.06] text-neutral-50"
                 )
               }
             >
@@ -46,12 +48,12 @@ export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
             <>
               <Link
                 to={ROUTES.NOTIFICATIONS}
-                className="relative rounded-[--radius-md] p-2 text-neutral-400 hover:bg-[--color-bg-surface-raised] hover:text-neutral-100"
+                className="relative rounded-lg p-2 text-neutral-400 hover:bg-white/[0.06] hover:text-neutral-100"
                 aria-label="Notifications"
               >
                 <Bell size={18} />
                 {NOTIFICATIONS.some((n) => !n.read) && (
-                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary-500" />
+                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(124,58,237,0.8)]" />
                 )}
               </Link>
               <Link to={ROUTES.PROFILE}>
@@ -87,14 +89,14 @@ export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
       </div>
 
       {isMobileOpen && (
-        <div className="border-t border-[--color-border-subtle] bg-[--color-bg-base] px-4 py-4 md:hidden">
+        <div className="mx-auto mt-2 w-full max-w-7xl rounded-2xl glass-panel px-4 py-4 md:hidden">
           <nav className="flex flex-col gap-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 onClick={() => setIsMobileOpen(false)}
-                className="rounded-[--radius-sm] px-3 py-2.5 text-sm font-medium text-neutral-300 hover:bg-[--color-bg-surface-raised]"
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-300 hover:bg-white/[0.06]"
               >
                 {item.label}
               </NavLink>

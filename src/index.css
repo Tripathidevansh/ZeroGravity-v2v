@@ -2,40 +2,49 @@
 
 /* ------------------------------------------------------------------ */
 /* SafeCircle AI — Design Tokens                                       */
-/* Phase 1: tokens only. Visual polish/animation intentionally minimal */
+/* Luxury tech / dark / glassmorphism theme                            */
 /* ------------------------------------------------------------------ */
 
 @theme {
   --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  /* Brand — Purple */
-  --color-primary-50: #f4f2ff;
-  --color-primary-100: #ebe6ff;
-  --color-primary-200: #d6cdff;
-  --color-primary-300: #b6a4ff;
-  --color-primary-400: #9271ff;
-  --color-primary-500: #7c5cfc;
-  --color-primary-600: #6a3ff0;
-  --color-primary-700: #5a2fd6;
-  --color-primary-800: #4a27ad;
-  --color-primary-900: #3d2389;
+  /* Brand — Purple (Primary) */
+  --color-primary-50: #f5f1ff;
+  --color-primary-100: #ece4ff;
+  --color-primary-200: #d9caff;
+  --color-primary-300: #bb9dff;
+  --color-primary-400: #9d6dff;
+  --color-primary-500: #7c3aed;
+  --color-primary-600: #6d28d9;
+  --color-primary-700: #5b21b6;
+  --color-primary-800: #4c1d95;
+  --color-primary-900: #3b1876;
 
-  /* Brand — Blue */
-  --color-secondary-50: #eef4ff;
-  --color-secondary-100: #dce9ff;
-  --color-secondary-200: #b9d3ff;
-  --color-secondary-300: #8ab4ff;
-  --color-secondary-400: #5c8fff;
-  --color-secondary-500: #3e7bfa;
-  --color-secondary-600: #2a5fe0;
-  --color-secondary-700: #2249b3;
-  --color-secondary-800: #1c3a8c;
-  --color-secondary-900: #17306e;
+  /* Brand — Blue (Secondary) */
+  --color-secondary-50: #eff6ff;
+  --color-secondary-100: #dbeafe;
+  --color-secondary-200: #bfdbfe;
+  --color-secondary-300: #93c5fd;
+  --color-secondary-400: #60a5fa;
+  --color-secondary-500: #3b82f6;
+  --color-secondary-600: #2563eb;
+  --color-secondary-700: #1d4ed8;
+  --color-secondary-800: #1e40af;
+  --color-secondary-900: #1e3a8a;
 
-  /* Safety signal — used sparingly for safety-score semantics only */
-  --color-safe-500: #22c55e;
-  --color-caution-500: #f5a524;
+  /* Accent — Cyan (used for gradients, glow, highlights) */
+  --color-accent-300: #67e8f9;
+  --color-accent-400: #22d3ee;
+  --color-accent-500: #06b6d4;
+  --color-accent-600: #0891b2;
+
+  /* Safety signal — semantic only, never decorative */
+  --color-safe-400: #34d399;
+  --color-safe-500: #10b981;
+  --color-caution-400: #fbbf24;
+  --color-caution-500: #f59e0b;
+  --color-risk-400: #f87171;
   --color-risk-500: #ef4444;
 
   /* Neutral — Slate */
@@ -49,47 +58,112 @@
   --color-neutral-700: #334155;
   --color-neutral-800: #1e293b;
   --color-neutral-900: #0f172a;
-  --color-neutral-950: #0a0f1c;
+  --color-neutral-950: #05070f;
 
-  /* Surface tokens (dark theme default) */
-  --color-bg-base: #0a0f1c;
+  /* Surface tokens (dark theme) */
+  --color-bg-base: #050816;
   --color-bg-surface: #0f172a;
-  --color-bg-surface-raised: #131c33;
-  --color-bg-overlay: #1a2544;
-  --color-border-subtle: #1e293b;
-  --color-border-default: #293548;
+  --color-bg-surface-raised: #111827;
+  --color-bg-overlay: #161f36;
+  --color-border-subtle: #1c2436;
+  --color-border-default: #262f45;
+
+  /* Glass */
+  --color-glass-bg: rgba(17, 24, 39, 0.55);
+  --color-glass-border: rgba(148, 163, 184, 0.12);
+  --color-glass-highlight: rgba(255, 255, 255, 0.06);
 
   /* Radius */
-  --radius-sm: 0.375rem;
-  --radius-md: 0.625rem;
-  --radius-lg: 0.875rem;
-  --radius-xl: 1.25rem;
-  --radius-2xl: 1.75rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-soft: 0 1px 2px rgba(0,0,0,0.24), 0 1px 1px rgba(0,0,0,0.16);
-  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.32), 0 2px 8px rgba(0,0,0,0.24);
-  --shadow-glow-primary: 0 0 0 1px rgba(124,92,252,0.24), 0 8px 32px rgba(124,92,252,0.18);
+  /* Shadows & glow */
+  --shadow-soft: 0 1px 2px rgba(0,0,0,0.3), 0 1px 1px rgba(0,0,0,0.2);
+  --shadow-elevated: 0 12px 32px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-glass: 0 8px 32px rgba(0,0,0,0.37), inset 0 1px 0 rgba(255,255,255,0.05);
+  --shadow-glow-primary: 0 0 0 1px rgba(124,58,237,0.25), 0 0 24px rgba(124,58,237,0.35), 0 8px 32px rgba(124,58,237,0.2);
+  --shadow-glow-accent: 0 0 0 1px rgba(6,182,212,0.25), 0 0 24px rgba(6,182,212,0.3);
+  --shadow-glow-safe: 0 0 24px rgba(16,185,129,0.35);
+  --shadow-glow-caution: 0 0 24px rgba(245,158,11,0.3);
+  --shadow-glow-risk: 0 0 24px rgba(239,68,68,0.35);
+
+  /* Gradients (used via bg-[image:var(--gradient-x)]) */
+  --gradient-hero: radial-gradient(80% 60% at 15% 0%, rgba(124,58,237,0.22), transparent 60%), radial-gradient(60% 50% at 100% 0%, rgba(6,182,212,0.16), transparent 55%);
+  --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
+  --gradient-primary-accent: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+  --gradient-surface: linear-gradient(160deg, rgba(124,58,237,0.08) 0%, rgba(17,24,39,0) 55%);
+  --gradient-radial-fade: radial-gradient(closest-side, rgba(124,58,237,0.15), transparent);
 }
 
 /* Base layer */
 @layer base {
   html {
     color-scheme: dark;
+    background-color: var(--color-bg-base);
   }
 
   body {
-    @apply bg-[--color-bg-base] text-neutral-100 antialiased;
+    background-color: var(--color-bg-base);
+    color: var(--color-neutral-50);
+    -webkit-font-smoothing: antialiased;
     font-family: var(--font-body);
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
+    letter-spacing: -0.01em;
   }
 
   ::selection {
     background-color: var(--color-primary-500);
     color: white;
   }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-default);
+    border-radius: 999px;
+    border: 2px solid var(--color-bg-base);
+  }
+}
+
+/* Reusable premium surface treatments */
+@layer components {
+  .glass-panel {
+    background-color: var(--color-glass-bg);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-glass);
+  }
+
+  .glow-ring-primary {
+    box-shadow: var(--shadow-glow-primary);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    rgba(255,255,255,0) 30%,
+    rgba(255,255,255,0.06) 50%,
+    rgba(255,255,255,0) 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2.2s ease-in-out infinite;
 }

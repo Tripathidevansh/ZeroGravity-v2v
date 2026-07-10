@@ -25,10 +25,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           rows={rows}
           aria-invalid={!!error}
           className={cn(
-            "w-full resize-none rounded-[--radius-md] border bg-[--color-bg-surface-raised] px-3.5 py-2.5 text-sm text-neutral-50",
+            "w-full resize-none rounded-md border bg-[var(--color-bg-surface-raised)] px-3.5 py-2.5 text-sm text-neutral-50",
             "placeholder:text-neutral-500 outline-none transition-colors",
             "focus:border-primary-400 focus:ring-2 focus:ring-primary-500/30",
-            error ? "border-risk-500" : "border-[--color-border-default]",
+            error ? "border-risk-500" : "border-[var(--color-border-default)]",
             className
           )}
           {...props}

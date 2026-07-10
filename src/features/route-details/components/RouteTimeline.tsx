@@ -21,11 +21,11 @@ export function RouteTimeline({ steps, progress }: RouteTimelineProps) {
         return (
           <li key={step.id} className={cn("relative flex gap-4 pb-6 last:pb-0", progress !== undefined && !isCompleted && "opacity-50")}>
             {!isLast && (
-              <span className="absolute left-[7px] top-4 h-full w-px bg-[--color-border-subtle]" aria-hidden="true" />
+              <span className="absolute left-[7px] top-4 h-full w-px bg-[var(--color-border-subtle)]" aria-hidden="true" />
             )}
             <span
               className={cn(
-                "z-10 mt-1 h-3.5 w-3.5 shrink-0 rounded-full border-2 border-[--color-bg-surface]",
+                "z-10 mt-1 h-3.5 w-3.5 shrink-0 rounded-full border-2 border-[var(--color-bg-surface)]",
                 config.bgClass.replace("/10", ""),
                 step.level === "safe" && "bg-safe-500",
                 step.level === "caution" && "bg-caution-500",

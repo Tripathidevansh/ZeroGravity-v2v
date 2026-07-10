@@ -12,21 +12,22 @@ const SIDEBAR_ITEMS = [
 
 export function Sidebar() {
   return (
-    <aside className="hidden w-60 shrink-0 border-r border-[--color-border-subtle] bg-[--color-bg-surface] px-3 py-6 md:flex md:flex-col">
-      <nav className="flex flex-col gap-1">
+    <aside className="sticky top-[6.5rem] hidden h-[calc(100vh-8rem)] w-64 shrink-0 pl-3 md:flex md:flex-col">
+      <nav className="glass-panel flex flex-col gap-1 rounded-2xl p-3">
         {SIDEBAR_ITEMS.map(({ label, path, icon: Icon }) => (
           <NavLink
             key={path}
             to={path}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 rounded-[--radius-md] px-3 py-2.5 text-sm font-medium text-neutral-400 transition-colors",
-                "hover:bg-[--color-bg-surface-raised] hover:text-neutral-100",
-                isActive && "bg-primary-500/10 text-primary-300"
+                "group relative flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-neutral-400 transition-all duration-200",
+                "hover:bg-white/[0.05] hover:text-neutral-100",
+                isActive &&
+                  "bg-[image:var(--gradient-primary)] text-white shadow-[var(--shadow-glow-primary)] hover:bg-[image:var(--gradient-primary)] hover:text-white"
               )
             }
           >
-            <Icon size={18} />
+            <Icon size={18} className="shrink-0 transition-transform duration-200 group-hover:scale-110" />
             {label}
           </NavLink>
         ))}

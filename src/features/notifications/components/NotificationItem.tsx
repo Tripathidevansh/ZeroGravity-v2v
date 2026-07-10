@@ -14,7 +14,7 @@ export function NotificationItem({ notification }: { notification: AppNotificati
   const { icon: Icon, className } = TYPE_CONFIG[notification.type];
 
   return (
-    <div className={cn("flex gap-3.5 rounded-[--radius-lg] px-3 py-3", !notification.read && "bg-primary-500/[0.04]")}>
+    <div className={cn("flex gap-3.5 rounded-lg px-3 py-3", !notification.read && "bg-primary-500/[0.04]")}>
       <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-full", className)}>
         <Icon size={16} />
       </span>

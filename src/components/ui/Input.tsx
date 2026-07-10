@@ -25,10 +25,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           aria-invalid={!!error}
           aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
           className={cn(
-            "h-11 w-full rounded-[--radius-md] border bg-[--color-bg-surface-raised] px-3.5 text-sm text-neutral-50",
+            "h-11 w-full rounded-md border bg-[var(--color-bg-surface-raised)] px-3.5 text-sm text-neutral-50",
             "placeholder:text-neutral-500 outline-none transition-colors",
             "focus:border-primary-400 focus:ring-2 focus:ring-primary-500/30",
-            error ? "border-risk-500" : "border-[--color-border-default]",
+            error ? "border-risk-500" : "border-[var(--color-border-default)]",
             className
           )}
           {...props}
