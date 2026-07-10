@@ -223,6 +223,29 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["emergency_events"]["Row"]>;
         Relationships: [];
       };
+      sos_photo_captures: {
+        Row: {
+          id: string;
+          user_id: string;
+          emergency_event_id: string | null;
+          storage_path: string;
+          public_url: string | null;
+          trigger_type: "button" | "voice";
+          camera_facing: "user" | "environment";
+          lat: number | null;
+          lng: number | null;
+          address: string | null;
+          mime_type: string;
+          file_size_bytes: number | null;
+          captured_at: string;
+        };
+        Insert: Omit<Database["public"]["Tables"]["sos_photo_captures"]["Row"], "id" | "captured_at"> & {
+          id?: string;
+          captured_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["sos_photo_captures"]["Row"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

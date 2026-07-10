@@ -11,6 +11,7 @@ import { findNearestByType } from "@/features/emergency-sos/utils";
 import { fetchActiveJourney } from "@/features/journey-mode/api/journeysService";
 import { getCurrentPosition } from "@/utils/geolocation";
 import { ROUTES } from "@/routes/paths";
+import { captureSOSPhoto } from "@/services/sosCameraService";
 
 export interface EmergencySOSButtonProps {
   /** "floating" renders a fixed, always-visible FAB (Dashboard). "inline"
@@ -45,7 +46,7 @@ export function EmergencySOSButton({ variant = "inline", journeyId = null, class
       // stale value from whenever this button happened to render.
       const activeJourney = journeyId ? await fetchActiveJourney() : null;
 
-      await activateEmergency.mutateAsync({
+      const newEvent = await activateEmergency.mutateAsync({
         lat: location.lat,
         lng: location.lng,
         journeyId,
@@ -57,6 +58,14 @@ export function EmergencySOSButton({ variant = "inline", journeyId = null, class
         routeLabel: activeJourney ? "Active route" : null,
         wsiScore: activeJourney?.wsi_score ?? null,
         journeyStatus: activeJourney?.status ?? null,
+      });
+
+      // 📸 Fire-and-forget camera capture — does NOT block navigation
+      captureSOSPhoto({
+        emergencyEventId: newEvent?.id ?? null,
+        triggerType: "button",
+        lat: location.lat,
+        lng: location.lng,
       });
 
       navigate(ROUTES.EMERGENCY);

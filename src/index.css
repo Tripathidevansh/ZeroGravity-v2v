@@ -1,108 +1,157 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------ */
-/* SafeCircle AI — Design Tokens                                       */
-/* Luxury tech / dark / glassmorphism theme                            */
+/* Nirbhaya AI — Stitch Design Tokens                                 */
+/* Vivid Light Radiance theme                                         */
 /* ------------------------------------------------------------------ */
 
 @theme {
-  --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Quicksand", ui-sans-serif, system-ui, sans-serif;
 
-  /* Brand — Purple (Primary) */
-  --color-primary-50: #f5f1ff;
-  --color-primary-100: #ece4ff;
-  --color-primary-200: #d9caff;
-  --color-primary-300: #bb9dff;
-  --color-primary-400: #9d6dff;
-  --color-primary-500: #7c3aed;
-  --color-primary-600: #6d28d9;
-  --color-primary-700: #5b21b6;
-  --color-primary-800: #4c1d95;
-  --color-primary-900: #3b1876;
+  /* Stitch Design System Palette Colors */
+  --color-tertiary-fixed-dim: #cec4ca;
+  --color-on-primary-container: #fffbff;
+  --color-on-tertiary-fixed-variant: #4b454a;
+  --color-on-secondary-container: #760b3a;
+  --color-on-primary: #ffffff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-tint: #bc004b;
+  --color-on-secondary-fixed-variant: #861a45;
+  --color-error: #ba1a1a;
+  --color-surface: #fff8f2;
+  --color-outline: #8f6f73;
+  --color-tertiary-fixed: #eae0e6;
+  --color-tertiary-container: #7a7278;
+  --color-surface-container-low: #faf2eb;
+  --color-background: #fff8f2;
+  --color-on-primary-fixed-variant: #900038;
+  --color-secondary-fixed: #ffd9e1;
+  --color-surface-bright: #fff8f2;
+  --color-on-tertiary: #ffffff;
+  --color-secondary-container: #ff7ba4;
+  --color-inverse-on-surface: #f7efe9;
+  --color-on-primary-fixed: #400014;
+  --color-on-error-container: #93000a;
+  --color-surface-variant: #e8e1db;
+  --color-surface-container-high: #eee7e0;
+  --color-on-surface-variant: #5b3f43;
+  --color-inverse-primary: #ffb2be;
+  --color-primary-container: #e2165f;
+  --color-on-tertiary-container: #fffbff;
+  --color-surface-container: #f4ede6;
+  --color-outline-variant: #e4bdc2;
+  --color-tertiary: #615a5f;
+  --color-on-surface: #1e1b17;
+  --color-error-container: #ffdad6;
+  --color-secondary: #a5345d;
+  --color-secondary-fixed-dim: #ffb1c5;
+  --color-on-error: #ffffff;
+  --color-on-secondary: #ffffff;
+  --color-primary-fixed: #ffd9de;
+  --color-on-background: #1e1b17;
+  --color-surface-container-highest: #e8e1db;
+  --color-on-secondary-fixed: #3f001a;
+  --color-surface-dim: #e0d9d2;
+  --color-inverse-surface: #33302c;
+  --color-primary-fixed-dim: #ffb2be;
+  --color-primary: #b80049;
+  --color-on-tertiary-fixed: #1f1a1e;
+  --color-deep-berry: #831843;
+  --color-hot-pink: #e91e63;
 
-  /* Brand — Blue (Secondary) */
-  --color-secondary-50: #eff6ff;
-  --color-secondary-100: #dbeafe;
-  --color-secondary-200: #bfdbfe;
-  --color-secondary-300: #93c5fd;
-  --color-secondary-400: #60a5fa;
-  --color-secondary-500: #3b82f6;
-  --color-secondary-600: #2563eb;
-  --color-secondary-700: #1d4ed8;
-  --color-secondary-800: #1e40af;
-  --color-secondary-900: #1e3a8a;
+  /* Theme Mapping for existing class compatibilities */
+  --color-primary-50: #fffbff;
+  --color-primary-100: #ffd9de;
+  --color-primary-200: #ffb2be;
+  --color-primary-300: #ffb2be;
+  --color-primary-400: #e91e63;
+  --color-primary-500: #b80049;
+  --color-primary-600: #e2165f;
+  --color-primary-700: #a5345d;
+  --color-primary-800: #831843;
+  --color-primary-900: #400014;
 
-  /* Accent — Cyan (used for gradients, glow, highlights) */
-  --color-accent-300: #67e8f9;
-  --color-accent-400: #22d3ee;
-  --color-accent-500: #06b6d4;
-  --color-accent-600: #0891b2;
+  --color-secondary-50: #ffd9e1;
+  --color-secondary-100: #ffd9e1;
+  --color-secondary-200: #ffb1c5;
+  --color-secondary-300: #ff7ba4;
+  --color-secondary-400: #e91e63;
+  --color-secondary-500: #a5345d;
+  --color-secondary-600: #861a45;
+  --color-secondary-700: #831843;
+  --color-secondary-800: #3f001a;
+  --color-secondary-900: #3f001a;
 
-  /* Safety signal — semantic only, never decorative */
-  --color-safe-400: #34d399;
-  --color-safe-500: #10b981;
-  --color-caution-400: #fbbf24;
-  --color-caution-500: #f59e0b;
+  --color-accent-300: #ff7ba4;
+  --color-accent-400: #e91e63;
+  --color-accent-500: #b80049;
+  --color-accent-600: #831843;
+
+  /* Safety signals map to Stitch System equivalents */
+  --color-safe-400: #4CAF50;
+  --color-safe-500: #388E3C;
+  --color-caution-400: #FFB300;
+  --color-caution-500: #F57C00;
   --color-risk-400: #f87171;
-  --color-risk-500: #ef4444;
+  --color-risk-500: #ba1a1a;
 
-  /* Neutral — Slate */
-  --color-neutral-50: #f8fafc;
-  --color-neutral-100: #f1f5f9;
-  --color-neutral-200: #e2e8f0;
-  --color-neutral-300: #cbd5e1;
-  --color-neutral-400: #94a3b8;
-  --color-neutral-500: #64748b;
-  --color-neutral-600: #475569;
-  --color-neutral-700: #334155;
-  --color-neutral-800: #1e293b;
-  --color-neutral-900: #0f172a;
-  --color-neutral-950: #05070f;
+  /* Neutral palette re-mapped for light theme (on-surface values) */
+  --color-neutral-50: #1e1b17;
+  --color-neutral-100: #1e1b17;
+  --color-neutral-200: #33302c;
+  --color-neutral-300: #4b454a;
+  --color-neutral-400: #5b3f43;
+  --color-neutral-500: #615a5f;
+  --color-neutral-600: #7a7278;
+  --color-neutral-700: #8f6f73;
+  --color-neutral-800: #e8e1db;
+  --color-neutral-900: #f4ede6;
+  --color-neutral-950: #fff8f2;
 
-  /* Surface tokens (dark theme) */
-  --color-bg-base: #050816;
-  --color-bg-surface: #0f172a;
-  --color-bg-surface-raised: #111827;
-  --color-bg-overlay: #161f36;
-  --color-border-subtle: #1c2436;
-  --color-border-default: #262f45;
+  /* Surface abstractions */
+  --color-bg-base: #fff8f2;
+  --color-bg-surface: #faf2eb;
+  --color-bg-surface-raised: #ffffff;
+  --color-bg-overlay: #f4ede6;
+  --color-border-subtle: #e4bdc2;
+  --color-border-default: #8f6f73;
 
-  /* Glass */
-  --color-glass-bg: rgba(17, 24, 39, 0.55);
-  --color-glass-border: rgba(148, 163, 184, 0.12);
-  --color-glass-highlight: rgba(255, 255, 255, 0.06);
+  /* Light theme Glass effects */
+  --color-glass-bg: rgba(255, 248, 242, 0.85);
+  --color-glass-border: rgba(228, 189, 194, 0.4);
+  --color-glass-highlight: rgba(255, 255, 255, 0.5);
 
-  /* Radius */
+  /* Border radius tokens */
   --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-2xl: 2rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --radius-2xl: 3rem;
   --radius-full: 9999px;
 
-  /* Shadows & glow */
-  --shadow-soft: 0 1px 2px rgba(0,0,0,0.3), 0 1px 1px rgba(0,0,0,0.2);
-  --shadow-elevated: 0 12px 32px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.3);
-  --shadow-glass: 0 8px 32px rgba(0,0,0,0.37), inset 0 1px 0 rgba(255,255,255,0.05);
-  --shadow-glow-primary: 0 0 0 1px rgba(124,58,237,0.25), 0 0 24px rgba(124,58,237,0.35), 0 8px 32px rgba(124,58,237,0.2);
-  --shadow-glow-accent: 0 0 0 1px rgba(6,182,212,0.25), 0 0 24px rgba(6,182,212,0.3);
-  --shadow-glow-safe: 0 0 24px rgba(16,185,129,0.35);
-  --shadow-glow-caution: 0 0 24px rgba(245,158,11,0.3);
-  --shadow-glow-risk: 0 0 24px rgba(239,68,68,0.35);
+  /* Light theme shadows & glow (pink hues) */
+  --shadow-soft: 0 1px 3px rgba(184, 0, 73, 0.04), 0 1px 2px rgba(184, 0, 73, 0.02);
+  --shadow-elevated: 0 12px 32px rgba(184, 0, 73, 0.08), 0 4px 12px rgba(184, 0, 73, 0.04);
+  --shadow-glass: 0 8px 32px rgba(233, 30, 99, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  --shadow-glow-primary: 0px 4px 20px rgba(233, 30, 99, 0.08);
+  --shadow-glow-accent: 0px 8px 30px rgba(233, 30, 99, 0.12);
+  --shadow-glow-safe: 0 0 24px rgba(76, 175, 80, 0.2);
+  --shadow-glow-caution: 0 0 24px rgba(255, 179, 0, 0.2);
+  --shadow-glow-risk: 0 0 24px rgba(186, 26, 26, 0.2);
 
-  /* Gradients (used via bg-[image:var(--gradient-x)]) */
-  --gradient-hero: radial-gradient(80% 60% at 15% 0%, rgba(124,58,237,0.22), transparent 60%), radial-gradient(60% 50% at 100% 0%, rgba(6,182,212,0.16), transparent 55%);
-  --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
-  --gradient-primary-accent: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
-  --gradient-surface: linear-gradient(160deg, rgba(124,58,237,0.08) 0%, rgba(17,24,39,0) 55%);
-  --gradient-radial-fade: radial-gradient(closest-side, rgba(124,58,237,0.15), transparent);
+  /* Gradients updated to warm pinks/creams */
+  --gradient-hero: radial-gradient(80% 60% at 15% 0%, rgba(233, 30, 99, 0.12), transparent 60%), radial-gradient(60% 50% at 100% 0%, rgba(165, 52, 93, 0.08), transparent 55%);
+  --gradient-primary: linear-gradient(135deg, #b80049 0%, #a5345d 100%);
+  --gradient-primary-accent: linear-gradient(135deg, #b80049 0%, #e91e63 100%);
+  --gradient-surface: linear-gradient(160deg, rgba(233, 30, 99, 0.04) 0%, rgba(255, 248, 242, 0) 55%);
+  --gradient-radial-fade: radial-gradient(closest-side, rgba(233, 30, 99, 0.12), transparent);
 }
 
-/* Base layer */
+/* Base layer configuration */
 @layer base {
   html {
-    color-scheme: dark;
+    color-scheme: light;
     background-color: var(--color-bg-base);
   }
 
@@ -115,12 +164,12 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
   }
 
   ::selection {
-    background-color: var(--color-primary-500);
-    color: white;
+    background-color: var(--color-primary-200);
+    color: var(--color-primary-900);
   }
 
   ::-webkit-scrollbar {
@@ -131,13 +180,13 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: var(--color-border-default);
+    background-color: var(--color-border-subtle);
     border-radius: 999px;
     border: 2px solid var(--color-bg-base);
   }
 }
 
-/* Reusable premium surface treatments */
+/* Reusable surface classes */
 @layer components {
   .glass-panel {
     background-color: var(--color-glass-bg);
@@ -160,9 +209,9 @@
 .animate-shimmer {
   background-image: linear-gradient(
     100deg,
-    rgba(255,255,255,0) 30%,
-    rgba(255,255,255,0.06) 50%,
-    rgba(255,255,255,0) 70%
+    rgba(184, 0, 73, 0) 30%,
+    rgba(184, 0, 73, 0.03) 50%,
+    rgba(184, 0, 73, 0) 70%
   );
   background-size: 200% 100%;
   animation: shimmer 2.2s ease-in-out infinite;

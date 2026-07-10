@@ -8,6 +8,7 @@ import { AUTH_NAV_ITEMS } from "@/utils/constants";
 import { VoiceSOSProvider } from "@/contexts/VoiceSOSContext";
 import { VoiceSOSIndicator } from "@/components/VoiceSOSIndicator";
 import { SOSCountdown } from "@/components/SOSCountdown";
+import { CameraPermissionBanner } from "@/components/CameraPermissionBanner";
 
 export function AuthenticatedLayout() {
   const location = useLocation();
@@ -16,6 +17,8 @@ export function AuthenticatedLayout() {
     <VoiceSOSProvider>
       <div className="flex min-h-screen flex-col">
         <Navbar navItems={AUTH_NAV_ITEMS} isAuthenticated />
+        {/* Camera permission banner — only shown when permission is not yet granted */}
+        <CameraPermissionBanner />
         <div className="flex flex-1">
           <Sidebar />
           <main className="flex-1 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-0">

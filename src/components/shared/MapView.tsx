@@ -108,7 +108,7 @@ function MapboxMap({
       mapboxglRef.current = mapboxgl;
       const map = new mapboxgl.Map({
         container: containerRef.current,
-        style: "mapbox://styles/mapbox/dark-v11",
+        style: "mapbox://styles/mapbox/streets-v12",
         center: [center.lng, center.lat],
         zoom: 13,
       });
@@ -132,7 +132,7 @@ function MapboxMap({
             type: "line",
             source: "route",
             layout: { "line-join": "round", "line-cap": "round" },
-            paint: { "line-color": "#7c5cfc", "line-width": 4 },
+            paint: { "line-color": "#b80049", "line-width": 4 },
           });
 
           // Fit viewport to show the entire route path
@@ -177,8 +177,8 @@ function MapboxMap({
       el.style.height = "18px";
       el.style.borderRadius = "9999px";
       el.style.border = "3px solid white";
-      el.style.background = "#7c3aed";
-      el.style.boxShadow = "0 0 0 6px rgba(124,58,237,0.3)";
+      el.style.background = "#b80049";
+      el.style.boxShadow = "0 0 0 6px rgba(184,0,73,0.3)";
       liveMarkerRef.current = new mapboxgl.Marker(el).setLngLat([livePosition.lng, livePosition.lat]).addTo(map);
     } else {
       liveMarkerRef.current.setLngLat([livePosition.lng, livePosition.lat]);
@@ -245,16 +245,16 @@ function MockMap({
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" preserveAspectRatio="none">
         <defs>
           <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-            <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+            <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(184,0,73,0.05)" strokeWidth="0.5" />
           </pattern>
         </defs>
         <rect width="100" height="100" fill="url(#grid)" />
 
         {/* stylized static "streets" for visual context */}
-        <line x1="0" y1="30" x2="100" y2="30" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" />
-        <line x1="0" y1="65" x2="100" y2="65" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" />
-        <line x1="25" y1="0" x2="25" y2="100" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" />
-        <line x1="70" y1="0" x2="70" y2="100" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" />
+        <line x1="0" y1="30" x2="100" y2="30" stroke="rgba(184,0,73,0.08)" strokeWidth="1.5" />
+        <line x1="0" y1="65" x2="100" y2="65" stroke="rgba(184,0,73,0.08)" strokeWidth="1.5" />
+        <line x1="25" y1="0" x2="25" y2="100" stroke="rgba(184,0,73,0.08)" strokeWidth="1.5" />
+        <line x1="70" y1="0" x2="70" y2="100" stroke="rgba(184,0,73,0.08)" strokeWidth="1.5" />
 
         {pathD && (
           <path
@@ -288,11 +288,11 @@ function MockMap({
 
         {livePoint && (
           <g>
-            <circle cx={livePoint.x} cy={livePoint.y} r="4" fill="#7c3aed" opacity="0.35">
+            <circle cx={livePoint.x} cy={livePoint.y} r="4" fill="#b80049" opacity="0.35">
               <animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite" />
             </circle>
-            <circle cx={livePoint.x} cy={livePoint.y} r="2.4" fill="#7c3aed" stroke="white" strokeWidth="0.6">
+            <circle cx={livePoint.x} cy={livePoint.y} r="2.4" fill="#b80049" stroke="white" strokeWidth="0.6">
               <title>Your live location</title>
             </circle>
           </g>

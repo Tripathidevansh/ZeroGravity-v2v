@@ -61,7 +61,7 @@ export function WSIScore({ score, size = "md", showLabel = false, className }: W
             cy={box / 2}
             r={radius}
             strokeWidth={stroke}
-            className="fill-none stroke-white/[0.06]"
+            className="fill-none stroke-neutral-800/10"
           />
           <circle
             cx={box / 2}

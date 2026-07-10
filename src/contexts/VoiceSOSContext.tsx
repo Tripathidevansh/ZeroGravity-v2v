@@ -7,6 +7,7 @@ import { fetchActiveJourney } from "@/features/journey-mode/api/journeysService"
 import { useToast } from "@/contexts/ToastContext";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/routes/paths";
+import { captureSOSPhoto } from "@/services/sosCameraService";
 
 export type PermissionState = "prompt" | "granted" | "denied" | "unsupported";
 
@@ -269,8 +270,12 @@ export function VoiceSOSProvider({ children }: { children: React.ReactNode }) {
     startRecognition();
   }, [showToast, startRecognition]);
 
+  // Keep a ref for the trigger type so triggerSOSEvent (async) can read it
+  const triggerTypeRef = useRef<"button" | "voice">("voice");
+
   // Actually invoke the Supabase SOS trigger logic
-  const triggerSOSEvent = async () => {
+  const triggerSOSEvent = async (triggerType: "button" | "voice" = "voice") => {
+    triggerTypeRef.current = triggerType;
     setIsCountdownActive(false);
     setCountdown(10);
     setRecognizedText("");
@@ -289,7 +294,7 @@ export function VoiceSOSProvider({ children }: { children: React.ReactNode }) {
         // non-fatal
       }
 
-      await activateEmergency.mutateAsync({
+      const newEvent = await activateEmergency.mutateAsync({
         lat: location.lat,
         lng: location.lng,
         journeyId: activeJourney?.id ?? null,
@@ -301,6 +306,14 @@ export function VoiceSOSProvider({ children }: { children: React.ReactNode }) {
         routeLabel: activeJourney ? "Active route" : null,
         wsiScore: activeJourney?.wsi_score ?? null,
         journeyStatus: activeJourney?.status ?? null,
+      });
+
+      // 📸 Fire-and-forget camera capture via singleton service
+      captureSOSPhoto({
+        emergencyEventId: newEvent?.id ?? null,
+        triggerType: triggerTypeRef.current,
+        lat: location.lat,
+        lng: location.lng,
       });
 
       navigate(ROUTES.EMERGENCY);

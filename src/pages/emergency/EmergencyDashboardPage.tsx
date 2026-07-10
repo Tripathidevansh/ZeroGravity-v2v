@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
-import { ShieldAlert, Clock, Navigation2, Phone, PhoneCall, MapPinned, BatteryMedium, ExternalLink, Mail, Copy, LocateFixed } from "lucide-react";
+import { ShieldAlert, Clock, Navigation2, Phone, PhoneCall, MapPinned, BatteryMedium, ExternalLink, Mail, Copy, LocateFixed, Camera, Download, ZoomIn } from "lucide-react";
 import { PageWrapper } from "@/components/shared/PageWrapper";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
@@ -59,6 +59,29 @@ export default function EmergencyDashboardPage() {
   const resolveEmergency = useResolveEmergency();
   const clock = useLiveClock();
   const [copied, setCopied] = useState(false);
+
+  // ── SOS photo captures for this event ─────────────────────────────────
+  interface CaptureRow {
+    id: string;
+    public_url: string | null;
+    storage_path: string;
+    trigger_type: string;
+    captured_at: string;
+  }
+  const [captures, setCaptures] = useState<CaptureRow[]>([]);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!emergency?.id) return;
+    supabase
+      .from("sos_photo_captures")
+      .select("id, public_url, storage_path, trigger_type, captured_at")
+      .eq("emergency_event_id", emergency.id)
+      .order("captured_at", { ascending: false })
+      .then(({ data }) => {
+        if (data) setCaptures(data as CaptureRow[]);
+      });
+  }, [emergency?.id]);
 
   if (isLoading) {
     return (
@@ -240,6 +263,114 @@ export default function EmergencyDashboardPage() {
               </a>
             </CardContent>
           </Card>
+
+          {/* ── SOS Photo Captures ──────────────────────────────────────────── */}
+          <Card>
+            <CardHeader>
+              <div>
+                <CardTitle>SOS Photo Captures</CardTitle>
+                <CardDescription>
+                  {captures.length === 0
+                    ? "No photos captured yet"
+                    : `${captures.length} photo${captures.length > 1 ? "s" : ""} captured at activation`}
+                </CardDescription>
+              </div>
+              <Camera className="text-primary-400" size={18} />
+            </CardHeader>
+            <CardContent>
+              {captures.length === 0 ? (
+                <p className="text-sm text-neutral-500">
+                  Photos are captured automatically when SOS is triggered. If none appear, ensure camera permission was granted before activation.
+                </p>
+              ) : (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {captures.map((cap) => (
+                    <div key={cap.id} className="group relative overflow-hidden rounded-xl border border-white/10">
+                      {cap.public_url ? (
+                        <>
+                          <img
+                            src={cap.public_url}
+                            alt={`SOS capture — ${new Date(cap.captured_at).toLocaleTimeString()}`}
+                            className="h-36 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                            <button
+                              onClick={() => setLightboxUrl(cap.public_url)}
+                              className="rounded-full bg-white/20 p-2 backdrop-blur-sm hover:bg-white/30"
+                              title="View full size"
+                            >
+                              <ZoomIn size={16} className="text-white" />
+                            </button>
+                            <a
+                              href={cap.public_url}
+                              download
+                              target="_blank"
+                              rel="noreferrer"
+                              className="rounded-full bg-white/20 p-2 backdrop-blur-sm hover:bg-white/30"
+                              title="Download photo"
+                            >
+                              <Download size={16} className="text-white" />
+                            </a>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex h-36 w-full items-center justify-center bg-neutral-800/60 text-xs text-neutral-500">
+                          Processing…
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between gap-1 px-2 py-1.5">
+                        <span className="text-[10px] text-neutral-400">
+                          {new Date(cap.captured_at).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                        </span>
+                        <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase ${
+                          cap.trigger_type === "voice"
+                            ? "bg-emerald-500/15 text-emerald-400"
+                            : "bg-primary-500/15 text-primary-400"
+                        }`}>
+                          {cap.trigger_type}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Lightbox */}
+          {lightboxUrl && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+              onClick={() => setLightboxUrl(null)}
+            >
+              <div
+                className="relative max-h-[90vh] max-w-3xl overflow-hidden rounded-2xl shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img src={lightboxUrl} alt="SOS capture full size" className="max-h-[90vh] w-full object-contain" />
+                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-black/60 px-4 py-3 backdrop-blur-sm">
+                  <span className="text-sm text-neutral-300">SOS Evidence Photo</span>
+                  <div className="flex gap-2">
+                    <a
+                      href={lightboxUrl}
+                      download
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/25"
+                    >
+                      <Download size={13} /> Download
+                    </a>
+                    <button
+                      onClick={() => setLightboxUrl(null)}
+                      className="rounded-full bg-white/15 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/25"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <Card>
             <CardHeader>

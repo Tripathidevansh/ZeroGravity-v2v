@@ -1,8 +1,8 @@
 import { ROUTES } from "@/routes/paths";
 
-export const APP_NAME = "SafeCircle AI";
+export const APP_NAME = "Nirbhaya AI";
 export const APP_TAGLINE =
-  "Google Maps tells you the fastest route. SafeCircle AI tells you the safest one.";
+  "Google Maps tells you the fastest route. Nirbhaya AI tells you the safest one.";
 
 export type NavItem = {
   label: string;
