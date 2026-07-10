@@ -6,10 +6,6 @@ import { REPORT_CATEGORY_LABEL } from "@/features/community-reports/types";
 import type { CommunityReport } from "@/features/community-reports/types";
 import type { InfrastructurePoint } from "@/services/infrastructureService";
 
-// Default "current location" used as the journey origin across the demo —
-// JIIT, Sector 62, Noida.
-export const DEFAULT_ORIGIN: MapRoutePoint = { lat: 28.6098, lng: 77.3649 };
-
 function hashSeed(input: string): number {
   let hash = 0;
   for (let i = 0; i < input.length; i++) {
@@ -68,7 +64,7 @@ export function generateRoutes(
   destination: SavedLocation,
   reports: CommunityReport[],
   infrastructure: InfrastructurePoint[],
-  origin: MapRoutePoint = DEFAULT_ORIGIN
+  origin: MapRoutePoint
 ): RouteOption[] {
   const baseSeed = hashSeed(destination.id);
 

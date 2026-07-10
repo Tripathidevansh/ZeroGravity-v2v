@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/contexts/ToastContext";
 import { useCreateReport } from "@/features/community-reports/api/useReports";
-import { DEFAULT_ORIGIN } from "@/features/route-recommendation/mockData";
+import { getCurrentPosition } from "@/utils/geolocation";
 import { REPORT_CATEGORY_LABEL, type ReportCategory, type ReportSeverity } from "@/features/community-reports/types";
 
 const SEVERITY_OPTIONS: { value: ReportSeverity; label: string }[] = [
@@ -15,23 +15,6 @@ const SEVERITY_OPTIONS: { value: ReportSeverity; label: string }[] = [
   { value: "medium", label: "Medium" },
   { value: "high", label: "High" },
 ];
-
-/** Best-effort current position; falls back to the app's default origin
- * (JIIT, Sector 62, Noida) if geolocation is denied or unavailable — the
- * report still submits successfully either way. */
-function getCurrentPosition(): Promise<{ lat: number; lng: number }> {
-  return new Promise((resolve) => {
-    if (!navigator.geolocation) {
-      resolve(DEFAULT_ORIGIN);
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => resolve(DEFAULT_ORIGIN),
-      { timeout: 4000 }
-    );
-  });
-}
 
 export interface ReportIncidentFormProps {
   onSubmitted?: () => void;

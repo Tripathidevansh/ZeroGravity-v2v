@@ -12,7 +12,8 @@ export function Card({ className, children, variant = "solid", glow = false, ...
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl p-6 transition-shadow duration-300",
+        "relative rounded-xl p-6 transition-shadow duration-300",
+        glow && "overflow-hidden",
         variant === "solid" &&
           "border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface-raised)] shadow-[var(--shadow-soft)]",
         variant === "glass" && "glass-panel",

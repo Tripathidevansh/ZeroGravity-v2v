@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { getSafetyLevelConfig } from "@/utils/safety";
 
-export type MapMarkerType = "police" | "hospital" | "safe-place" | "report";
+export type MapMarkerType = "police" | "hospital" | "pharmacy" | "metro" | "fuel" | "safe-place" | "report";
 
 export interface MapMarker {
   id: string;
@@ -144,6 +144,9 @@ function MapboxMap({
 const MARKER_COLOR: Record<MapMarkerType, string> = {
   police: "#3e7bfa",
   hospital: "#ef4444",
+  pharmacy: "#06b6d4",
+  metro: "#a855f7",
+  fuel: "#f59e0b",
   "safe-place": "#22c55e",
   report: "#f5a524",
 };

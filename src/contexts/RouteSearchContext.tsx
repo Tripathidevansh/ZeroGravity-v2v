@@ -5,7 +5,7 @@ import type { RouteOption } from "@/features/route-recommendation/types";
 import { generateRoutes } from "@/features/route-recommendation/mockData";
 import { fetchReports } from "@/features/community-reports/api/reportsService";
 import { REPORTS_QUERY_KEY } from "@/features/community-reports/api/useReports";
-import { fetchInfrastructurePoints } from "@/services/infrastructureService";
+import { fetchNearbyPlaces } from "@/services/infrastructureService";
 
 interface RouteSearchContextValue {
   destination: SavedLocation | null;
@@ -13,7 +13,9 @@ interface RouteSearchContextValue {
   selectedRoute: RouteOption | null;
   isSearching: boolean;
   searchError: string | null;
-  searchDestination: (destination: SavedLocation) => Promise<void>;
+  /** `origin` must be a real GPS fix — see useGeolocation(). There is no
+   * hardcoded default location anymore. */
+  searchDestination: (destination: SavedLocation, origin: { lat: number; lng: number }) => Promise<void>;
   selectRoute: (routeId: string) => void;
   clearSelectedRoute: () => void;
 }
@@ -29,19 +31,24 @@ export function RouteSearchProvider({ children }: { children: ReactNode }) {
   const [searchError, setSearchError] = useState<string | null>(null);
 
   const searchDestination = useCallback(
-    async (dest: SavedLocation) => {
+    async (dest: SavedLocation, origin: { lat: number; lng: number }) => {
       setIsSearching(true);
       setSearchError(null);
       try {
-        // Reuses React Query's cache when fresh, so re-searching a
-        // destination shortly after doesn't re-fetch reports/infra.
+        const midpoint = { lat: (origin.lat + dest.lat) / 2, lng: (origin.lng + dest.lng) / 2 };
+
+        // Reuses React Query's cache when fresh, so re-searching shortly
+        // after doesn't re-fetch reports/nearby places from scratch.
         const [reports, infrastructure] = await Promise.all([
           queryClient.fetchQuery({ queryKey: REPORTS_QUERY_KEY, queryFn: fetchReports }),
-          queryClient.fetchQuery({ queryKey: ["infrastructure-points"], queryFn: fetchInfrastructurePoints }),
+          queryClient.fetchQuery({
+            queryKey: ["nearby-places", `${midpoint.lat.toFixed(3)},${midpoint.lng.toFixed(3)}`],
+            queryFn: () => fetchNearbyPlaces(midpoint),
+          }),
         ]);
 
         setDestination(dest);
-        setRoutes(generateRoutes(dest, reports, infrastructure));
+        setRoutes(generateRoutes(dest, reports, infrastructure, origin));
         setSelectedRoute(null);
       } catch (err) {
         setSearchError(err instanceof Error ? err.message : "Couldn't compute safe routes. Please try again.");

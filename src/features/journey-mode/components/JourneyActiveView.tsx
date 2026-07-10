@@ -7,22 +7,26 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { RouteTimeline } from "@/features/route-details/components/RouteTimeline";
 import { getNearbyPlaces, getRouteTimeline } from "@/features/route-details/mockData";
 import { useReports } from "@/features/community-reports/api/useReports";
-import { useInfrastructurePoints } from "@/services/infrastructureService";
-import { EmergencyButton } from "@/features/journey-mode/components/EmergencyButton";
+import { useNearbyPlaces } from "@/services/infrastructureService";
+import { EmergencySOSButton } from "@/features/emergency-sos/components/EmergencySOSButton";
 import { useJourneySimulation } from "@/features/journey-mode/hooks/useJourneySimulation";
 import { formatDistanceKm, formatDurationMin } from "@/utils/formatting";
 import type { RouteOption } from "@/features/route-recommendation/types";
 
 export interface JourneyActiveViewProps {
   route: RouteOption;
+  /** The persisted journey row's id, if the journey started successfully —
+   * links an Emergency SOS triggered here to this journey. */
+  journeyId?: string | null;
   /** Called when the journey ends — `completed` is true on natural arrival,
    * false when the user manually ends the journey early. */
   onEndJourney: (completed: boolean) => void;
 }
 
-export function JourneyActiveView({ route, onEndJourney }: JourneyActiveViewProps) {
+export function JourneyActiveView({ route, journeyId = null, onEndJourney }: JourneyActiveViewProps) {
   const { data: reports } = useReports();
-  const { data: infrastructure } = useInfrastructurePoints();
+  const routeMidpoint = route.path[Math.floor(route.path.length / 2)];
+  const { data: infrastructure } = useNearbyPlaces(routeMidpoint);
   const sim = useJourneySimulation(route, reports ?? []);
   const nearbyPlaces = getNearbyPlaces(route, infrastructure ?? []);
   const timeline = getRouteTimeline(route);
@@ -88,7 +92,7 @@ export function JourneyActiveView({ route, onEndJourney }: JourneyActiveViewProp
       </div>
 
       <div className="flex flex-col gap-5">
-        <EmergencyButton />
+        <EmergencySOSButton variant="inline" journeyId={journeyId} />
 
         <Card>
           <CardHeader>

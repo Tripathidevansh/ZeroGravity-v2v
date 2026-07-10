@@ -14,7 +14,7 @@ import { RouteTimeline } from "@/features/route-details/components/RouteTimeline
 import { NearbyPlaceList } from "@/features/route-details/components/NearbyPlaceList";
 import { getNearbyPlaces, getRouteTimeline, getReportsAlongRoute } from "@/features/route-details/mockData";
 import { useReports } from "@/features/community-reports/api/useReports";
-import { useInfrastructurePoints } from "@/services/infrastructureService";
+import { useNearbyPlaces } from "@/services/infrastructureService";
 import { useRouteExplanation } from "@/features/route-details/api/useRouteExplanation";
 import { useRouteSearch } from "@/contexts/RouteSearchContext";
 import { formatDistanceKm, formatDurationMin } from "@/utils/formatting";
@@ -25,9 +25,10 @@ export default function RouteDetailsPage() {
   const navigate = useNavigate();
   const { routes, destination, selectRoute } = useRouteSearch();
   const { data: reports } = useReports();
-  const { data: infrastructure } = useInfrastructurePoints();
-
   const route = routes.find((r) => r.id === routeId);
+  const routeMidpoint = route ? route.path[Math.floor(route.path.length / 2)] : null;
+  const { data: infrastructure } = useNearbyPlaces(routeMidpoint);
+
   const explanation = useRouteExplanation(route ?? null, destination?.name ?? "");
 
   useEffect(() => {

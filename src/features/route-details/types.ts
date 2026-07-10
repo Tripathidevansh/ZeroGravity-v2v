@@ -3,7 +3,7 @@ import type { MapMarkerType } from "@/components/shared/MapView";
 export interface NearbyPlace {
   id: string;
   name: string;
-  type: Extract<MapMarkerType, "police" | "hospital" | "safe-place">;
+  type: Extract<MapMarkerType, "police" | "hospital" | "pharmacy" | "metro" | "fuel" | "safe-place">;
   address: string;
   distanceKm: number;
   lat: number;

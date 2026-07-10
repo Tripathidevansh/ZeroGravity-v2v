@@ -7,10 +7,11 @@ import {
 
 export const NOTIFICATIONS_QUERY_KEY = ["notifications"] as const;
 
-export function useNotifications() {
+export function useNotifications(enabled = true) {
   return useQuery({
     queryKey: NOTIFICATIONS_QUERY_KEY,
     queryFn: fetchNotifications,
+    enabled,
   });
 }
 

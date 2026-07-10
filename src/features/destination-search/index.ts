@@ -2,4 +2,3 @@ export { DestinationSearch } from "@/features/destination-search/components/Dest
 export { LocationListItem } from "@/features/destination-search/components/LocationListItem";
 export { LOCATION_CATEGORY_ICON } from "@/features/destination-search/components/LocationIcon";
 export * from "@/features/destination-search/types";
-export * from "@/features/destination-search/mockData";

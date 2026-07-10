@@ -148,6 +148,33 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["trusted_contacts"]["Row"]>;
         Relationships: [];
       };
+      emergency_events: {
+        Row: {
+          id: string;
+          user_id: string;
+          journey_id: string | null;
+          status: "active" | "resolved";
+          triggered_at: string;
+          resolved_at: string | null;
+          lat: number;
+          lng: number;
+          timeline: { at: string; label: string }[];
+          notified_contacts: { contactId: string; name: string; status: string; sentAt: string }[];
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["emergency_events"]["Row"],
+          "id" | "status" | "triggered_at" | "resolved_at" | "timeline" | "notified_contacts"
+        > & {
+          id?: string;
+          status?: "active" | "resolved";
+          triggered_at?: string;
+          resolved_at?: string | null;
+          timeline?: { at: string; label: string }[];
+          notified_contacts?: { contactId: string; name: string; status: string; sentAt: string }[];
+        };
+        Update: Partial<Database["public"]["Tables"]["emergency_events"]["Row"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

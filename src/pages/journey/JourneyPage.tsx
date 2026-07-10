@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { LocateFixed } from "lucide-react";
 import { PageWrapper } from "@/components/shared/PageWrapper";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { DestinationSearch } from "@/features/destination-search/components/DestinationSearch";
 import { RouteCard } from "@/features/route-recommendation/components/RouteCard";
 import { JourneyActiveView } from "@/features/journey-mode/components/JourneyActiveView";
@@ -10,13 +13,14 @@ import { useStartJourney, useEndJourney, ACTIVE_JOURNEY_QUERY_KEY } from "@/feat
 import { createNotification } from "@/features/notifications/api/notificationsService";
 import { NOTIFICATIONS_QUERY_KEY } from "@/features/notifications/api/useNotifications";
 import { useRouteSearch } from "@/contexts/RouteSearchContext";
-import { DEFAULT_ORIGIN } from "@/features/route-recommendation/mockData";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import { useToast } from "@/contexts/ToastContext";
 import type { SavedLocation } from "@/features/destination-search/types";
 import type { RouteOption } from "@/features/route-recommendation/types";
 
 export default function JourneyPage() {
   const { destination, routes, selectedRoute, searchDestination, selectRoute, clearSelectedRoute } = useRouteSearch();
+  const { position, isLoading: locationLoading, refresh: refreshLocation } = useGeolocation();
   const startJourney = useStartJourney();
   const endJourney = useEndJourney();
   const queryClient = useQueryClient();
@@ -24,20 +28,29 @@ export default function JourneyPage() {
   const [activeJourneyId, setActiveJourneyId] = useState<string | null>(null);
 
   const handleSelectDestination = (location: SavedLocation) => {
-    void searchDestination(location);
+    if (!position) {
+      showToast({
+        variant: "warning",
+        title: "Location access needed",
+        description: "SafeCircle AI needs your current location to plan a journey.",
+      });
+      refreshLocation();
+      return;
+    }
+    void searchDestination(location, position);
   };
 
   const handleSelectRoute = async (route: RouteOption) => {
     selectRoute(route.id);
-    if (!destination) return;
+    if (!destination || !position) return;
 
     try {
       const journey = await startJourney.mutateAsync({
         destinationName: destination.name,
         destinationLat: destination.lat,
         destinationLng: destination.lng,
-        originLat: DEFAULT_ORIGIN.lat,
-        originLng: DEFAULT_ORIGIN.lng,
+        originLat: position.lat,
+        originLng: position.lng,
         distanceKm: route.distanceKm,
         durationMin: route.durationMin,
         wsiScore: route.wsi,
@@ -90,7 +103,7 @@ export default function JourneyPage() {
     return (
       <PageWrapper className="py-0">
         <SectionHeader title="Journey active" description={`Heading to ${destination?.name ?? "your destination"}`} />
-        <JourneyActiveView route={selectedRoute} onEndJourney={handleEndJourney} />
+        <JourneyActiveView route={selectedRoute} journeyId={activeJourneyId} onEndJourney={handleEndJourney} />
       </PageWrapper>
     );
   }
@@ -98,6 +111,21 @@ export default function JourneyPage() {
   return (
     <PageWrapper className="py-0">
       <SectionHeader title="Journey mode" description="Start a guided, safety-scored journey." />
+
+      {!locationLoading && !position && (
+        <div className="mb-6">
+          <EmptyState
+            icon={<LocateFixed size={28} />}
+            title="Location access needed"
+            description="SafeCircle AI needs your current location to plan a safe journey."
+            action={
+              <Button size="sm" onClick={refreshLocation}>
+                Enable location
+              </Button>
+            }
+          />
+        </div>
+      )}
 
       <Card className="mb-6">
         <CardHeader>
@@ -107,7 +135,7 @@ export default function JourneyPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <DestinationSearch onSelectLocation={handleSelectDestination} placeholder="Enter destination" />
+          <DestinationSearch onSelectLocation={handleSelectDestination} placeholder="Enter destination" proximity={position} />
         </CardContent>
       </Card>
 

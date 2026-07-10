@@ -14,6 +14,7 @@ export const ROUTES = {
   ROUTE_RESULTS: "/routes",
   ROUTE_DETAILS: "/routes/:routeId",
   NOTIFICATIONS: "/notifications",
+  EMERGENCY: "/emergency",
 } as const;
 
 export function routeDetailsPath(routeId: string) {

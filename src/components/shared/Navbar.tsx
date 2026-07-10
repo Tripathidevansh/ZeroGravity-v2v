@@ -15,7 +15,7 @@ export interface NavbarProps {
 
 export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const { data: notifications } = useNotifications();
+  const { data: notifications } = useNotifications(isAuthenticated);
   const hasUnread = isAuthenticated && (notifications ?? []).some((n) => !n.read);
 
   return (

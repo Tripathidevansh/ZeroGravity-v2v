@@ -6,11 +6,13 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { Modal } from "@/components/ui/Modal";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { WSIScore } from "@/components/shared/WSIScore";
 import { LOCATION_CATEGORY_ICON } from "@/features/destination-search/components/LocationIcon";
 import { useSavedPlaces } from "@/features/destination-search/api/useSavedPlaces";
 import { TrustedContactItem } from "@/features/profile/components/TrustedContactItem";
+import { AddTrustedContactForm } from "@/features/profile/components/AddTrustedContactForm";
 import { SettingsRow } from "@/features/profile/components/SettingsRow";
 import { useMyProfile, useMyContributionCount, useTrustedContacts } from "@/features/profile/api/useProfile";
 import { useJourneyHistory } from "@/features/journey-mode/api/useJourneys";
@@ -38,6 +40,7 @@ export default function ProfilePage() {
     reportAlerts: true,
     autoEmergency: false,
   });
+  const [isAddContactOpen, setIsAddContactOpen] = useState(false);
 
   const displayName = profile?.full_name || user?.email?.split("@")[0] || "Your account";
   const initials = displayName
@@ -100,7 +103,7 @@ export default function ProfilePage() {
                 <CardTitle>Trusted contacts</CardTitle>
                 <CardDescription>People notified during an emergency alert</CardDescription>
               </div>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={() => setIsAddContactOpen(true)}>
                 <Plus size={14} />
                 Add
               </Button>
@@ -230,6 +233,10 @@ export default function ProfilePage() {
           </Card>
         </div>
       </div>
+
+      <Modal isOpen={isAddContactOpen} onClose={() => setIsAddContactOpen(false)} title="Add trusted contact">
+        <AddTrustedContactForm onSubmitted={() => setIsAddContactOpen(false)} />
+      </Modal>
     </PageWrapper>
   );
 }

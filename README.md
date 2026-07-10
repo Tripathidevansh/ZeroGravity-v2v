@@ -207,3 +207,114 @@ report or two from `/reports` to see the score and map respond.
   recent destinations are fully real).
 - **Settings toggles on Profile** are local UI state only — there's no
   `user_settings` table in this migration since it wasn't specified.
+
+---
+
+## Emergency SOS
+
+A new `emergency_events` table was added — run `supabase/migrations/0002_emergency_sos.sql`
+after `0001_init.sql` (same SQL editor, same RLS conventions as every other table).
+
+- **Floating SOS button** — permanently visible on `/dashboard` (bottom-right,
+  clears the mobile bottom nav), plus the same activation flow reused as the
+  existing inline button inside Journey Mode. One trigger component
+  (`EmergencySOSButton`, `variant="floating" | "inline"`), one activation
+  path — no duplicated logic between the two entry points.
+- **Activation** captures GPS (falls back gracefully if denied), finds the
+  nearest police/hospital via the existing infrastructure data + haversine
+  distance, persists a real `emergency_events` row, writes a real in-app
+  notification, and simulates alerting trusted contacts (see
+  `notifyTrustedContacts.ts` — clearly marked as the integration point for a
+  real SMS/WhatsApp provider later; the function signature is already what a
+  real implementation would need).
+- **`/emergency`** — new protected route: live elapsed timer + wall clock,
+  map, nearest help, current journey (if any), full timeline, tap-to-call
+  helplines, and a resolve action.
+
+**Known scope decision:** per "do not modify layouts," there's no persistent
+nav link to `/emergency` in the Sidebar/Navbar — it's reached via the SOS
+flow itself. If you want it reachable at any time while an emergency is
+active (e.g. a small indicator in the Navbar), that's a small, contained
+follow-up rather than something done here.
+
+---
+
+## Task 1 + 2 — Live locations (no more hardcoded data)
+
+Combined into one unit because Task 1 ("remove hardcoded locations") is not
+achievable in isolation from Task 2 ("Mapbox integration") — there has to be
+a live replacement before the hardcoded seed data can go.
+
+**What changed:**
+- The `infrastructure_points` Supabase table (a fixed, seeded list of named
+  places) is no longer read anywhere in the app. The table still physically
+  exists in your database (no migration removes it — deleting data isn't
+  necessary to stop depending on it), but zero application code queries it.
+- `services/infrastructureService.ts` now calls Mapbox's **Search Box
+  Category API** live, for 6 categories: police, hospital, pharmacy, metro
+  (`railway_station`), fuel (`gas_station`), and safe-place (approximated
+  with `shopping_mall`, since no provider models a literal "safe place"
+  category — same interpretive call the old seed data made, now backed by
+  real data instead of a fixed list).
+- A new `useGeolocation()` hook (`src/hooks/useGeolocation.ts`) provides the
+  user's real GPS position, one-shot or continuously watched. There is no
+  hardcoded "current location" default anywhere anymore — Dashboard, Journey
+  Mode, and route generation all require a real GPS fix, and show an honest
+  "location access needed" prompt (reusing existing `EmptyState`/`Button`)
+  instead of silently substituting a fixed coordinate.
+- One narrow exception, by design: `utils/geolocation.ts` keeps a
+  `GEOLOCATION_FALLBACK` constant used *only* as a last resort inside
+  `getCurrentPosition()` — for one-shot actions (filing a report, activating
+  SOS) that must be able to complete even if the browser has no geolocation
+  support at all. This is not used as a default anywhere nearby-places or
+  route generation runs.
+
+**Honest limitation:** I don't have network access to `api.mapbox.com` from
+this environment, so the Search Box API integration is built against
+Mapbox's documented request/response shape but has **not been exercised
+against the live API**. If nearby places come back empty everywhere, open
+DevTools → Network on a page like `/dashboard`, find the `searchbox/v1/category`
+requests, and check the response — most likely culprits are a category ID
+that doesn't match Mapbox's current taxonomy exactly, or the response field
+names (`properties.name`, `properties.full_address`) differing slightly from
+what's parsed here. Send me that response and I'll fix the parsing precisely.
+
+**Not yet done — next up:** Task 3 (continuous GPS tracking during Journey
+Mode), Task 4–7 (upgraded SOS capture, Resend emails, live tracking page),
+and the two named bug fixes. Stopping here as instructed, for you to verify
+this checkpoint before I continue.
+
+---
+
+## Task 1 correction — Journey destination search was still mock
+
+Caught: the shared `DestinationSearch` component (used identically by both
+Dashboard and Journey — same import path, confirmed) still fell back to a
+static `SUGGESTED_LOCATIONS` array and only filtered within a small local
+list when typing, rather than searching the real world.
+
+**Fixed:**
+- New `features/destination-search/api/mapboxSearchService.ts` — Mapbox's
+  two-step Search Box flow (`suggest` → `retrieve`), unrestricted to any
+  category: addresses, landmarks, hospitals, malls, universities, airports,
+  restaurants, anything Mapbox indexes.
+- Typing now debounces (300ms) into a live `suggest` call; picking a result
+  calls `retrieve` to resolve real coordinates before continuing into the
+  exact same route-generation flow as before (zero changes needed there —
+  the retrieved place is normalized into the same `SavedLocation` shape).
+- A Mapbox session token is generated per search session (`crypto.randomUUID()`),
+  refreshed after each completed selection, matching Mapbox's billing model.
+- `src/features/destination-search/mockData.ts` is deleted entirely —
+  verified via full-codebase grep that no component anywhere still
+  references `SUGGESTED_LOCATIONS`, `SAVED_LOCATIONS`, `RECENT_LOCATIONS`,
+  or any of the old mock location IDs.
+- Both Dashboard and Journey now also pass live GPS position as `proximity`
+  into the search, so results are biased toward the user the same way
+  Google Maps does.
+
+**Same untestable-from-here caveat as Task 2:** no network access to
+`api.mapbox.com` in this environment, so this is built correctly against
+Mapbox's documented Search Box API shape but not exercised live. Type 2+
+characters into either search box and confirm real suggestions appear; if
+not, check the Network tab for the `suggest` request/response the same way
+as before.

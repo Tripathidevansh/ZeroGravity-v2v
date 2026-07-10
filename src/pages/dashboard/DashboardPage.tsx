@@ -1,9 +1,10 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, ShieldCheck, FileWarning, Navigation, Activity, TrendingUp, Users, FileText, Route, Timer, MapPin } from "lucide-react";
+import { Sparkles, ShieldCheck, FileWarning, Navigation, Activity, TrendingUp, Users, FileText, Route, Timer, MapPin, LocateFixed } from "lucide-react";
 import { PageWrapper } from "@/components/shared/PageWrapper";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { WSIScore } from "@/components/shared/WSIScore";
@@ -11,16 +12,17 @@ import { MapView } from "@/components/shared/MapView";
 import { DestinationSearch } from "@/features/destination-search/components/DestinationSearch";
 import { ReportCard } from "@/features/community-reports/components/ReportCard";
 import { useReports } from "@/features/community-reports/api/useReports";
-import { useInfrastructurePoints } from "@/services/infrastructureService";
+import { useNearbyPlaces } from "@/services/infrastructureService";
 import { useJourneyHistory, useActiveJourney } from "@/features/journey-mode/api/useJourneys";
 import { useCommunityStats } from "@/services/communityStatsService";
 import { RecentJourneyItem } from "@/features/dashboard/components/RecentJourneyItem";
 import { StatTile } from "@/features/dashboard/components/StatTile";
+import { EmergencySOSButton } from "@/features/emergency-sos/components/EmergencySOSButton";
 import { useRouteSearch } from "@/contexts/RouteSearchContext";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { useToast } from "@/contexts/ToastContext";
 import { getSafetyLevel, SAFETY_LEVEL_CONFIG } from "@/utils/safety";
-import { computeWSI } from "@/services/wsiEngine";
-import { DEFAULT_ORIGIN } from "@/features/route-recommendation/mockData";
-import { distanceKm } from "@/services/wsiEngine";
+import { computeWSI, distanceKm } from "@/services/wsiEngine";
 import { ROUTES } from "@/routes/paths";
 import type { SavedLocation } from "@/features/destination-search/types";
 
@@ -33,22 +35,24 @@ function getGreeting() {
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const { searchDestination } = useRouteSearch();
+  const { position, isLoading: locationLoading, refresh: refreshLocation } = useGeolocation();
 
   const { data: reports, isLoading: reportsLoading } = useReports();
-  const { data: infrastructure, isLoading: infraLoading } = useInfrastructurePoints();
+  const { data: infrastructure, isLoading: infraLoading } = useNearbyPlaces(position);
   const { data: journeyHistory, isLoading: journeysLoading } = useJourneyHistory(3);
   const { data: activeJourney } = useActiveJourney();
   const { data: communityStats, isLoading: statsLoading } = useCommunityStats();
 
   const todayScore = useMemo(() => {
-    if (!reports || !infrastructure) return null;
+    if (!reports || !infrastructure || !position) return null;
     const wsiReports = reports
       .filter((r) => r.lat !== undefined && r.lng !== undefined)
       .map((r) => ({ lat: r.lat!, lng: r.lng!, severity: r.severity, createdAt: r.reportedAt }));
     const wsiInfra = infrastructure.map((p) => ({ lat: p.lat, lng: p.lng, type: p.type }));
-    return computeWSI(DEFAULT_ORIGIN, wsiReports, wsiInfra);
-  }, [reports, infrastructure]);
+    return computeWSI(position, wsiReports, wsiInfra);
+  }, [reports, infrastructure, position]);
 
   const todayLevel = todayScore !== null ? getSafetyLevel(todayScore) : "safe";
   const scoreLabel = SAFETY_LEVEL_CONFIG[todayLevel].label;
@@ -59,12 +63,12 @@ export default function DashboardPage() {
   );
 
   const nearbySafePlaces = useMemo(() => {
-    if (!infrastructure) return [];
+    if (!infrastructure || !position) return [];
     return [...infrastructure]
-      .map((p) => ({ ...p, distance: distanceKm(DEFAULT_ORIGIN, p) }))
+      .map((p) => ({ ...p, distance: distanceKm(position, p) }))
       .sort((a, b) => a.distance - b.distance)
       .slice(0, 3);
-  }, [infrastructure]);
+  }, [infrastructure, position]);
 
   const previewMarkers = useMemo(
     () => (infrastructure ?? []).map((p) => ({ id: p.id, type: p.type, name: p.name, lat: p.lat, lng: p.lng })),
@@ -81,9 +85,20 @@ export default function DashboardPage() {
     : [];
 
   const handleSelectDestination = async (location: SavedLocation) => {
-    await searchDestination(location);
+    if (!position) {
+      showToast({
+        variant: "warning",
+        title: "Location access needed",
+        description: "SafeCircle AI needs your current location to recommend safe routes.",
+      });
+      refreshLocation();
+      return;
+    }
+    await searchDestination(location, position);
     navigate(ROUTES.ROUTE_RESULTS);
   };
+
+  const locationUnavailable = !locationLoading && !position;
 
   return (
     <PageWrapper className="py-0">
@@ -102,8 +117,18 @@ export default function DashboardPage() {
         </p>
 
         <div className="mt-7 max-w-2xl">
-          <DestinationSearch onSelectLocation={handleSelectDestination} />
+          <DestinationSearch onSelectLocation={handleSelectDestination} proximity={position} />
         </div>
+
+        {locationUnavailable && (
+          <button
+            onClick={refreshLocation}
+            className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-caution-500/30 bg-caution-500/10 px-3 py-2 text-xs font-medium text-caution-400 hover:bg-caution-500/15"
+          >
+            <LocateFixed size={14} />
+            Enable location access to see live safety data
+          </button>
+        )}
       </div>
 
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
@@ -119,7 +144,18 @@ export default function DashboardPage() {
             </span>
           </CardHeader>
           <CardContent className="flex items-center gap-6">
-            {reportsLoading || infraLoading || todayScore === null ? (
+            {locationUnavailable ? (
+              <EmptyState
+                icon={<LocateFixed size={28} />}
+                title="Location access needed"
+                description="Enable location to see your area's live safety score."
+                action={
+                  <Button size="sm" onClick={refreshLocation}>
+                    Enable location
+                  </Button>
+                }
+              />
+            ) : reportsLoading || infraLoading || todayScore === null ? (
               <LoadingSpinner size="lg" label="Calculating safety score" />
             ) : (
               <>
@@ -127,7 +163,7 @@ export default function DashboardPage() {
                 <div>
                   <Badge variant={todayLevel}>{scoreLabel}</Badge>
                   <p className="mt-3 max-w-[16rem] text-sm text-neutral-400">
-                    Based on recent community reports and verified infrastructure within 1.5 km of your area.
+                    Based on recent community reports and verified places within 1.5 km of your live location.
                   </p>
                 </div>
               </>
@@ -147,13 +183,23 @@ export default function DashboardPage() {
             </span>
           </div>
           <div className="mt-4">
-            <MapView
-              center={DEFAULT_ORIGIN}
-              markers={previewMarkers}
-              wsi={todayScore ?? undefined}
-              heightClassName="h-48"
-              className="rounded-none border-0 border-t border-[var(--color-border-subtle)]"
-            />
+            {locationUnavailable ? (
+              <div className="flex h-48 items-center justify-center border-t border-[var(--color-border-subtle)] text-sm text-neutral-500">
+                Enable location to preview your live area.
+              </div>
+            ) : !position ? (
+              <div className="flex h-48 items-center justify-center border-t border-[var(--color-border-subtle)]">
+                <LoadingSpinner size="md" label="Finding your location" />
+              </div>
+            ) : (
+              <MapView
+                center={position}
+                markers={previewMarkers}
+                wsi={todayScore ?? undefined}
+                heightClassName="h-48"
+                className="rounded-none border-0 border-t border-[var(--color-border-subtle)]"
+              />
+            )}
           </div>
         </Card>
 
@@ -190,7 +236,9 @@ export default function DashboardPage() {
             </span>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            {infraLoading ? (
+            {locationUnavailable ? (
+              <p className="text-sm text-neutral-500">Enable location to see places near you.</p>
+            ) : infraLoading || !position ? (
               <LoadingSpinner size="sm" label="Loading nearby places" />
             ) : nearbySafePlaces.length === 0 ? (
               <p className="text-sm text-neutral-500">No verified places found nearby yet.</p>
@@ -308,6 +356,8 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <EmergencySOSButton variant="floating" />
     </PageWrapper>
   );
 }

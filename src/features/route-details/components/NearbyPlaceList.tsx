@@ -1,9 +1,12 @@
-import { Siren, Cross, ShieldCheck } from "lucide-react";
+import { Siren, Cross, ShieldCheck, Pill, TrainFront, Fuel } from "lucide-react";
 import type { NearbyPlace } from "@/features/route-details/types";
 
 const TYPE_CONFIG = {
   police: { icon: Siren, className: "bg-secondary-500/10 text-secondary-400" },
   hospital: { icon: Cross, className: "bg-red-500/10 text-red-400" },
+  pharmacy: { icon: Pill, className: "bg-cyan-500/10 text-cyan-400" },
+  metro: { icon: TrainFront, className: "bg-purple-500/10 text-purple-400" },
+  fuel: { icon: Fuel, className: "bg-amber-500/10 text-amber-400" },
   "safe-place": { icon: ShieldCheck, className: "bg-safe-500/10 text-emerald-400" },
 } as const;
 

@@ -15,7 +15,7 @@ export interface WSIReportInput {
 export interface WSIInfrastructureInput {
   lat: number;
   lng: number;
-  type: "police" | "hospital" | "safe-place";
+  type: "police" | "hospital" | "pharmacy" | "metro" | "fuel" | "safe-place";
 }
 
 const SEVERITY_WEIGHT: Record<ReportSeverityRow, number> = {
@@ -84,7 +84,7 @@ export function computeWSI(
     const distance = distanceKm(location, point);
     if (distance > INFRA_RADIUS_KM) continue;
     const proximityFactor = 1 - distance / INFRA_RADIUS_KM;
-    const weight = point.type === "safe-place" ? 1.5 : 2.5; // police/hospital weigh slightly more
+    const weight = point.type === "police" || point.type === "hospital" ? 2.5 : point.type === "metro" ? 1.8 : 1.5; // emergency services weigh most; transit/pharmacy/fuel/safe-place slightly less
     bonus += weight * proximityFactor;
   }
   bonus = Math.min(bonus, MAX_INFRA_BONUS);
