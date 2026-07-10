@@ -18,6 +18,7 @@ import { useMyProfile, useMyContributionCount, useTrustedContacts } from "@/feat
 import { useJourneyHistory } from "@/features/journey-mode/api/useJourneys";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatRelativeTime, formatDistanceKm } from "@/utils/formatting";
+import { useVoiceSOS } from "@/hooks/useVoiceSOS";
 import { ROUTES } from "@/routes/paths";
 
 const INITIAL_SETTINGS = [
@@ -34,6 +35,7 @@ export default function ProfilePage() {
   const { data: trustedContacts, isLoading: contactsLoading } = useTrustedContacts();
   const { data: journeyHistory, isLoading: journeysLoading } = useJourneyHistory(5);
   const { data: savedPlaces, isLoading: placesLoading } = useSavedPlaces();
+  const { isVoiceSOSActive, enableVoiceSOS, disableVoiceSOS } = useVoiceSOS();
 
   const [settings, setSettings] = useState<Record<string, boolean>>({
     shareLocation: true,
@@ -171,6 +173,18 @@ export default function ProfilePage() {
                   onChange={(checked) => setSettings((prev) => ({ ...prev, [setting.key]: checked }))}
                 />
               ))}
+              <SettingsRow
+                title="Voice Activated SOS"
+                description="Trigger hands-free emergency alerts by saying 'help', 'emergency', or 'save me'."
+                checked={isVoiceSOSActive}
+                onChange={(checked) => {
+                  if (checked) {
+                    enableVoiceSOS();
+                  } else {
+                    disableVoiceSOS();
+                  }
+                }}
+              />
             </CardContent>
           </Card>
         </div>
