@@ -12,19 +12,19 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const VARIANT_STYLES: Record<ButtonVariant, string> = {
   primary:
-    "bg-[image:var(--gradient-primary)] text-white shadow-[var(--shadow-glow-primary)] hover:brightness-110 hover:shadow-[0_0_0_1px_rgba(124,58,237,0.35),0_0_32px_rgba(124,58,237,0.45),0_10px_36px_rgba(124,58,237,0.28)] active:brightness-95",
+    "bg-[image:var(--gradient-primary)] text-white shadow-[var(--shadow-glow-primary)] hover:brightness-110 active:brightness-95 hover:-translate-y-0.5",
   secondary:
-    "bg-secondary-500 text-white hover:bg-secondary-600 shadow-[var(--shadow-glow-accent)]",
+    "bg-secondary-500 text-white hover:bg-secondary-600 shadow-[var(--shadow-glow-accent)] hover:-translate-y-0.5",
   outline:
-    "border border-[var(--color-border-default)] text-neutral-100 bg-white/[0.02] hover:bg-white/[0.06] hover:border-primary-400/50",
-  ghost: "text-neutral-300 hover:bg-white/[0.06] hover:text-neutral-50",
+    "border border-[var(--color-border-default)] text-primary-600 bg-transparent hover:bg-primary-50 hover:border-primary-500",
+  ghost: "text-neutral-200 hover:bg-neutral-800 hover:text-neutral-50",
   danger: "bg-risk-500 text-white hover:bg-red-600 shadow-[var(--shadow-glow-risk)]",
 };
 
 const SIZE_STYLES: Record<ButtonSize, string> = {
-  sm: "h-9 px-3.5 text-sm rounded-lg",
-  md: "h-11 px-5 text-sm rounded-xl",
-  lg: "h-13 px-7 text-base rounded-xl",
+  sm: "h-9 px-4 text-xs rounded-full",
+  md: "h-11 px-6 text-sm rounded-full",
+  lg: "h-13 px-8 text-base rounded-full",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

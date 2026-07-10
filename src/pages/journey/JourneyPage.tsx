@@ -32,7 +32,7 @@ export default function JourneyPage() {
       showToast({
         variant: "warning",
         title: "Location access needed",
-        description: "SafeCircle AI needs your current location to plan a journey.",
+        description: "Nirbhaya AI needs your current location to plan a journey.",
       });
       refreshLocation();
       return;
@@ -117,7 +117,7 @@ export default function JourneyPage() {
           <EmptyState
             icon={<LocateFixed size={28} />}
             title="Location access needed"
-            description="SafeCircle AI needs your current location to plan a safe journey."
+            description="Nirbhaya AI needs your current location to plan a safe journey."
             action={
               <Button size="sm" onClick={refreshLocation}>
                 Enable location

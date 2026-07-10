@@ -36,8 +36,8 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
       />
       <div
         className={cn(
-          "relative w-full max-w-md rounded-xl border border-[var(--color-border-subtle)]",
-          "bg-[var(--color-bg-surface-raised)] p-6 shadow-[var(--shadow-elevated)]",
+          "relative w-full max-w-md rounded-2xl border border-[var(--color-border-subtle)]",
+          "bg-[var(--color-neutral-950)] p-6 shadow-[var(--shadow-elevated)]",
           className
         )}
       >

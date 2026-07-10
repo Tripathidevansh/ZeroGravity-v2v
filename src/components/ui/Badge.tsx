@@ -8,11 +8,11 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const VARIANT_STYLES: Record<BadgeVariant, string> = {
-  neutral: "bg-white/[0.04] text-neutral-300 border-[var(--color-border-default)]",
-  primary: "bg-primary-500/12 text-primary-300 border-primary-500/30",
-  safe: "bg-safe-500/12 text-safe-400 border-safe-500/30",
-  caution: "bg-caution-500/12 text-caution-400 border-caution-500/30",
-  risk: "bg-risk-500/12 text-risk-400 border-risk-500/30",
+  neutral: "bg-[var(--color-bg-surface-raised)] text-neutral-200 border-[var(--color-border-subtle)]",
+  primary: "bg-primary-50 text-primary-600 border-primary-200",
+  safe: "bg-emerald-50 text-emerald-600 border-emerald-200",
+  caution: "bg-amber-50 text-amber-600 border-amber-200",
+  risk: "bg-red-50 text-red-600 border-red-200",
 };
 
 export function Badge({ className, variant = "neutral", children, ...props }: BadgeProps) {

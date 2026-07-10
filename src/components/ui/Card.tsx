@@ -12,11 +12,11 @@ export function Card({ className, children, variant = "solid", glow = false, ...
   return (
     <div
       className={cn(
-        "relative rounded-xl p-6 transition-all duration-300 ease-out",
+        "relative rounded-2xl p-6 transition-all duration-300 ease-out",
         glow && "overflow-hidden",
         variant === "solid" &&
-          "border border-neutral-800/50 bg-[var(--color-bg-surface-raised)] shadow-[var(--shadow-soft)] hover:border-neutral-700/50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)]",
-        variant === "glass" && "glass-panel hover:bg-white/[0.01] hover:border-white/10",
+          "border border-[var(--color-border-subtle)] bg-[var(--color-neutral-950)] shadow-[var(--shadow-soft)] hover:scale-[1.01] hover:shadow-[var(--shadow-elevated)]",
+        variant === "glass" && "glass-panel hover:bg-[var(--color-bg-surface-raised)]/80 hover:border-[var(--color-border-default)]",
         className
       )}
       {...props}

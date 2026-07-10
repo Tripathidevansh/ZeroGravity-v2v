@@ -89,7 +89,7 @@ export default function DashboardPage() {
       showToast({
         variant: "warning",
         title: "Location access needed",
-        description: "SafeCircle AI needs your current location to recommend safe routes.",
+        description: "Nirbhaya AI needs your current location to recommend safe routes.",
       });
       refreshLocation();
       return;
@@ -337,7 +337,7 @@ export default function DashboardPage() {
           <CardHeader>
             <div>
               <CardTitle>Community statistics</CardTitle>
-              <CardDescription>SafeCircle AI's impact this week</CardDescription>
+              <CardDescription>Nirbhaya AI's impact this week</CardDescription>
             </div>
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-500/12 text-primary-300">
               <Users size={18} />

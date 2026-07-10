@@ -19,8 +19,8 @@ export function MobileNav() {
           to={path}
           className={({ isActive }) =>
             cn(
-              "flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-[11px] font-medium text-neutral-500 transition-colors",
-              isActive && "bg-white/[0.06] text-primary-400"
+              "flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-[11px] font-medium text-neutral-300 transition-colors",
+              isActive && "bg-primary-50 text-primary-600 font-semibold"
             )
           }
         >

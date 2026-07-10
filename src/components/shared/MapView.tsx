@@ -108,7 +108,7 @@ function MapboxMap({
       mapboxglRef.current = mapboxgl;
       const map = new mapboxgl.Map({
         container: containerRef.current,
-        style: "mapbox://styles/mapbox/dark-v11",
+        style: "mapbox://styles/mapbox/streets-v12",
         center: [center.lng, center.lat],
         zoom: 13,
       });
@@ -132,7 +132,7 @@ function MapboxMap({
             type: "line",
             source: "route",
             layout: { "line-join": "round", "line-cap": "round" },
-            paint: { "line-color": "#7c5cfc", "line-width": 4 },
+            paint: { "line-color": "#b10e6b", "line-width": 4 },
           });
 
           // Fit viewport to show the entire route path
@@ -177,8 +177,8 @@ function MapboxMap({
       el.style.height = "18px";
       el.style.borderRadius = "9999px";
       el.style.border = "3px solid white";
-      el.style.background = "#7c3aed";
-      el.style.boxShadow = "0 0 0 6px rgba(124,58,237,0.3)";
+      el.style.background = "#b10e6b";
+      el.style.boxShadow = "0 0 0 6px rgba(177,14,107,0.3)";
       liveMarkerRef.current = new mapboxgl.Marker(el).setLngLat([livePosition.lng, livePosition.lat]).addTo(map);
     } else {
       liveMarkerRef.current.setLngLat([livePosition.lng, livePosition.lat]);

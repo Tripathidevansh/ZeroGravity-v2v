@@ -6,40 +6,46 @@
 /* ------------------------------------------------------------------ */
 
 @theme {
-  --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Quicksand", "Nunito Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Nunito Sans", ui-sans-serif, system-ui, sans-serif;
 
-  /* Brand — Purple (Primary) */
-  --color-primary-50: #f5f1ff;
-  --color-primary-100: #ece4ff;
-  --color-primary-200: #d9caff;
-  --color-primary-300: #bb9dff;
-  --color-primary-400: #9d6dff;
-  --color-primary-500: #7c3aed;
-  --color-primary-600: #6d28d9;
-  --color-primary-700: #5b21b6;
-  --color-primary-800: #4c1d95;
-  --color-primary-900: #3b1876;
+  /* Brand — Primary Pink/Magenta */
+  --color-primary-50: #fff0f4;
+  --color-primary-100: #ffd9e4;
+  --color-primary-200: #ffb0cd;
+  --color-primary-300: #f472a1;
+  --color-primary-400: #d23284;
+  --color-primary-500: #b10e6b;
+  --color-primary-600: #980058;
+  --color-primary-700: #8c0053;
+  --color-primary-800: #6a003f;
+  --color-primary-900: #3e0022;
 
-  /* Brand — Blue (Secondary) */
-  --color-secondary-50: #eff6ff;
-  --color-secondary-100: #dbeafe;
-  --color-secondary-200: #bfdbfe;
-  --color-secondary-300: #93c5fd;
-  --color-secondary-400: #60a5fa;
-  --color-secondary-500: #3b82f6;
-  --color-secondary-600: #2563eb;
-  --color-secondary-700: #1d4ed8;
-  --color-secondary-800: #1e40af;
-  --color-secondary-900: #1e3a8a;
+  /* Brand — Secondary Muted Magenta */
+  --color-secondary-50: #fff0f2;
+  --color-secondary-100: #ffd9e1;
+  --color-secondary-200: #ffb1c5;
+  --color-secondary-300: #ff7ba4;
+  --color-secondary-400: #d6537f;
+  --color-secondary-500: #a5345d;
+  --color-secondary-600: #861a45;
+  --color-secondary-700: #760b3a;
+  --color-secondary-800: #5d032b;
+  --color-secondary-900: #3f001a;
 
-  /* Accent — Cyan (used for gradients, glow, highlights) */
-  --color-accent-300: #67e8f9;
-  --color-accent-400: #22d3ee;
-  --color-accent-500: #06b6d4;
-  --color-accent-600: #0891b2;
+  /* Accent — Warm Amber/Brown (Stitch Tertiary) */
+  --color-accent-50: #fff5ed;
+  --color-accent-100: #ffdcbd;
+  --color-accent-200: #f0bd8b;
+  --color-accent-300: #b38253;
+  --color-accent-400: #966c41;
+  --color-accent-500: #7b542b;
+  --color-accent-600: #623f18;
+  --color-accent-700: #4b2f10;
+  --color-accent-800: #361e05;
+  --color-accent-900: #2c1600;
 
-  /* Safety signal — semantic only, never decorative */
+  /* Safety signals — semantic green/amber/red (Must remain functional safety signals) */
   --color-safe-400: #34d399;
   --color-safe-500: #10b981;
   --color-caution-400: #fbbf24;
@@ -47,31 +53,31 @@
   --color-risk-400: #f87171;
   --color-risk-500: #ef4444;
 
-  /* Neutral — Slate */
-  --color-neutral-50: #f8fafc;
-  --color-neutral-100: #f1f5f9;
-  --color-neutral-200: #e2e8f0;
-  --color-neutral-300: #cbd5e1;
-  --color-neutral-400: #94a3b8;
-  --color-neutral-500: #64748b;
-  --color-neutral-600: #475569;
-  --color-neutral-700: #334155;
-  --color-neutral-800: #1e293b;
-  --color-neutral-900: #0f172a;
-  --color-neutral-950: #05070f;
+  /* Neutral — Warm Slate/Brown-Gray Scale */
+  --color-neutral-50: #1e1b17;       /* On-surface / On-background text */
+  --color-neutral-100: #33302c;      /* Inverse-surface */
+  --color-neutral-200: #574048;      /* On-surface-variant */
+  --color-neutral-300: #574048;
+  --color-neutral-400: #8b7079;      /* Outline */
+  --color-neutral-500: #8b7079;
+  --color-neutral-600: #debec8;      /* Outline-variant */
+  --color-neutral-700: #debec8;
+  --color-neutral-800: #faf2eb;      /* Surface-container-low */
+  --color-neutral-900: #f4ede6;      /* Surface-container */
+  --color-neutral-950: #ffffff;      /* Surface-container-lowest */
 
-  /* Surface tokens (dark theme) */
-  --color-bg-base: #050816;
-  --color-bg-surface: #0f172a;
-  --color-bg-surface-raised: #111827;
-  --color-bg-overlay: #161f36;
-  --color-border-subtle: #1c2436;
-  --color-border-default: #262f45;
+  /* Surface tokens (light theme) */
+  --color-bg-base: #fff8f2;          /* Stitch background */
+  --color-bg-surface: #fff8f2;       /* Stitch surface */
+  --color-bg-surface-raised: #faf2eb;/* Stitch surface-container-low */
+  --color-bg-overlay: #eee7e0;       /* Stitch surface-container-high */
+  --color-border-subtle: #debec8;    /* Stitch outline-variant */
+  --color-border-default: #8b7079;   /* Stitch outline */
 
   /* Glass */
-  --color-glass-bg: rgba(17, 24, 39, 0.55);
-  --color-glass-border: rgba(148, 163, 184, 0.12);
-  --color-glass-highlight: rgba(255, 255, 255, 0.06);
+  --color-glass-bg: rgba(255, 248, 242, 0.65);
+  --color-glass-border: rgba(139, 112, 121, 0.15);
+  --color-glass-highlight: rgba(255, 255, 255, 0.45);
 
   /* Radius */
   --radius-sm: 0.5rem;
@@ -82,27 +88,27 @@
   --radius-full: 9999px;
 
   /* Shadows & glow */
-  --shadow-soft: 0 1px 2px rgba(0,0,0,0.3), 0 1px 1px rgba(0,0,0,0.2);
-  --shadow-elevated: 0 12px 32px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.3);
-  --shadow-glass: 0 8px 32px rgba(0,0,0,0.37), inset 0 1px 0 rgba(255,255,255,0.05);
-  --shadow-glow-primary: 0 0 0 1px rgba(124,58,237,0.25), 0 0 24px rgba(124,58,237,0.35), 0 8px 32px rgba(124,58,237,0.2);
-  --shadow-glow-accent: 0 0 0 1px rgba(6,182,212,0.25), 0 0 24px rgba(6,182,212,0.3);
-  --shadow-glow-safe: 0 0 24px rgba(16,185,129,0.35);
-  --shadow-glow-caution: 0 0 24px rgba(245,158,11,0.3);
-  --shadow-glow-risk: 0 0 24px rgba(239,68,68,0.35);
+  --shadow-soft: 0 4px 12px rgba(233, 30, 99, 0.08);
+  --shadow-elevated: 0 12px 32px rgba(233, 30, 99, 0.12), 0 4px 12px rgba(233, 30, 99, 0.08);
+  --shadow-glass: 0 8px 32px rgba(233, 30, 99, 0.08), inset 0 1px 0 rgba(255,255,255,0.4);
+  --shadow-glow-primary: 0 0 0 1px rgba(177, 14, 107, 0.15), 0 0 24px rgba(177, 14, 107, 0.25), 0 8px 32px rgba(177, 14, 107, 0.12);
+  --shadow-glow-accent: 0 0 0 1px rgba(123, 84, 43, 0.15), 0 0 24px rgba(123, 84, 43, 0.2);
+  --shadow-glow-safe: 0 0 24px rgba(16, 185, 129, 0.25);
+  --shadow-glow-caution: 0 0 24px rgba(245, 158, 11, 0.2);
+  --shadow-glow-risk: 0 0 24px rgba(239, 68, 68, 0.25);
 
-  /* Gradients (used via bg-[image:var(--gradient-x)]) */
-  --gradient-hero: radial-gradient(80% 60% at 15% 0%, rgba(124,58,237,0.22), transparent 60%), radial-gradient(60% 50% at 100% 0%, rgba(6,182,212,0.16), transparent 55%);
-  --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
-  --gradient-primary-accent: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
-  --gradient-surface: linear-gradient(160deg, rgba(124,58,237,0.08) 0%, rgba(17,24,39,0) 55%);
-  --gradient-radial-fade: radial-gradient(closest-side, rgba(124,58,237,0.15), transparent);
+  /* Gradients */
+  --gradient-hero: radial-gradient(80% 60% at 15% 0%, rgba(255, 217, 228, 0.4), transparent 60%), radial-gradient(60% 50% at 100% 0%, rgba(255, 220, 189, 0.3), transparent 55%);
+  --gradient-primary: linear-gradient(135deg, #b10e6b 0%, #a5345d 100%);
+  --gradient-primary-accent: linear-gradient(135deg, #b10e6b 0%, #7b542b 100%);
+  --gradient-surface: linear-gradient(160deg, rgba(255, 217, 228, 0.15) 0%, rgba(255, 248, 242, 0) 55%);
+  --gradient-radial-fade: radial-gradient(closest-side, rgba(255, 217, 228, 0.25), transparent);
 }
 
 /* Base layer */
 @layer base {
   html {
-    color-scheme: dark;
+    color-scheme: light;
     background-color: var(--color-bg-base);
   }
 
@@ -119,7 +125,7 @@
   }
 
   ::selection {
-    background-color: var(--color-primary-500);
+    background-color: var(--color-primary-400);
     color: white;
   }
 
@@ -131,7 +137,7 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: var(--color-border-default);
+    background-color: var(--color-border-subtle);
     border-radius: 999px;
     border: 2px solid var(--color-bg-base);
   }
@@ -161,9 +167,25 @@
   background-image: linear-gradient(
     100deg,
     rgba(255,255,255,0) 30%,
-    rgba(255,255,255,0.06) 50%,
+    rgba(255,255,255,0.4) 50%,
     rgba(255,255,255,0) 70%
   );
   background-size: 200% 100%;
   animation: shimmer 2.2s ease-in-out infinite;
+}
+
+/* Stitch Reference Styles */
+.pink-glow-shadow {
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.12);
+}
+.hero-gradient {
+  background: linear-gradient(to right, rgba(255, 248, 242, 0.9), rgba(255, 248, 242, 0.4), transparent);
+}
+.pulse-hot-pink {
+  animation: pulse-pink 2s infinite;
+}
+@keyframes pulse-pink {
+  0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(236, 72, 153, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
 }

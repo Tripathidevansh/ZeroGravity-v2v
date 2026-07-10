@@ -31,7 +31,7 @@ export function Features() {
     <section id="features" className="py-20">
       <Container>
         <SectionHeader
-          eyebrow="What SafeCircle AI does"
+          eyebrow="What Nirbhaya AI does"
           title="Prevention, not reaction"
           description="Every feature is designed to help you avoid an unsafe situation before it happens."
           align="center"
@@ -40,7 +40,7 @@ export function Features() {
           {FEATURES.map(({ icon: Icon, title, description }) => (
             <Card key={title}>
               <CardHeader>
-                <span className="flex h-10 w-10 items-center justify-center rounded-md bg-primary-500/10 text-primary-400">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-100 text-primary-600">
                   <Icon size={20} />
                 </span>
               </CardHeader>

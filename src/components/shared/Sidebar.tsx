@@ -20,8 +20,8 @@ export function Sidebar() {
             to={path}
             className={({ isActive }) =>
               cn(
-                "group relative flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-neutral-400 transition-all duration-200",
-                "hover:bg-white/[0.05] hover:text-neutral-100",
+                "group relative flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-neutral-200 transition-all duration-200",
+                "hover:bg-neutral-800 hover:text-neutral-50",
                 isActive &&
                   "bg-[image:var(--gradient-primary)] text-white shadow-[var(--shadow-glow-primary)] hover:bg-[image:var(--gradient-primary)] hover:text-white"
               )

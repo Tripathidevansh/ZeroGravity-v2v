@@ -41,7 +41,7 @@ export default function LoginPage() {
       footer={
         <>
           Don&apos;t have an account?{" "}
-          <Link to={ROUTES.SIGNUP} className="font-medium text-primary-400 hover:text-primary-300">
+          <Link to={ROUTES.SIGNUP} className="font-medium text-primary-600 hover:text-primary-500">
             Sign up
           </Link>
         </>
@@ -68,7 +68,7 @@ export default function LoginPage() {
           required
         />
         <div className="flex items-center justify-end">
-          <Link to={ROUTES.FORGOT_PASSWORD} className="text-xs font-medium text-primary-400 hover:text-primary-300">
+          <Link to={ROUTES.FORGOT_PASSWORD} className="text-xs font-medium text-primary-600 hover:text-primary-500">
             Forgot password?
           </Link>
         </div>

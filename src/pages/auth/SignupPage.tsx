@@ -43,11 +43,11 @@ export default function SignupPage() {
   return (
     <AuthCard
       title="Create your account"
-      description="Join SafeCircle AI and start travelling the safer way."
+      description="Join Nirbhaya AI and start travelling the safer way."
       footer={
         <>
           Already have an account?{" "}
-          <Link to={ROUTES.LOGIN} className="font-medium text-primary-400 hover:text-primary-300">
+          <Link to={ROUTES.LOGIN} className="font-medium text-primary-600 hover:text-primary-500">
             Log in
           </Link>
         </>

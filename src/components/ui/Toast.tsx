@@ -34,8 +34,8 @@ export function Toast({ id, title, description, variant = "info", onDismiss }: T
     <div
       role="status"
       className={cn(
-        "flex w-full max-w-sm items-start gap-3 rounded-lg border",
-        "border-[var(--color-border-subtle)] bg-[var(--color-bg-surface-raised)] p-4 shadow-[var(--shadow-elevated)]"
+        "flex w-full max-w-sm items-start gap-3 rounded-xl border",
+        "border-[var(--color-border-subtle)] bg-[var(--color-neutral-950)] p-4 shadow-[var(--shadow-elevated)]"
       )}
     >
       <Icon size={20} className={cn("mt-0.5 shrink-0", className)} />

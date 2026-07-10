@@ -37,8 +37,8 @@ export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
                 cn(
                   "rounded-lg px-3.5 py-2 text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-white/[0.08] text-neutral-50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]"
-                    : "text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-100"
+                    ? "bg-primary-100 text-primary-700 font-semibold shadow-sm"
+                    : "text-neutral-200 hover:bg-neutral-800 hover:text-neutral-50"
                 )
               }
             >
@@ -52,12 +52,12 @@ export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
             <>
               <Link
                 to={ROUTES.NOTIFICATIONS}
-                className="relative rounded-lg p-2 text-neutral-400 hover:bg-white/[0.06] hover:text-neutral-100"
+                className="relative rounded-lg p-2 text-neutral-200 hover:bg-neutral-800 hover:text-neutral-50"
                 aria-label="Notifications"
               >
                 <Bell size={18} />
                 {hasUnread && (
-                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(124,58,237,0.8)]" />
+                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(236,72,153,0.8)]" />
                 )}
               </Link>
               <Link to={ROUTES.PROFILE}>
@@ -83,7 +83,7 @@ export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
         </div>
 
         <button
-          className="text-neutral-300 md:hidden"
+          className="text-neutral-50 md:hidden"
           onClick={() => setIsMobileOpen((prev) => !prev)}
           aria-label="Toggle navigation menu"
           aria-expanded={isMobileOpen}
@@ -100,7 +100,7 @@ export function Navbar({ navItems, isAuthenticated = false }: NavbarProps) {
                 key={item.path}
                 to={item.path}
                 onClick={() => setIsMobileOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-300 hover:bg-white/[0.06]"
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-200 hover:bg-neutral-800"
               >
                 {item.label}
               </NavLink>

@@ -12,53 +12,53 @@ const FOOTER_LINKS = [
     ],
   },
   {
-    heading: "Company",
-    links: [
-      { label: "About", href: "/#about" },
-      { label: "Contact", href: "mailto:hello@safecircle.ai" },
-    ],
-  },
-  {
-    heading: "Legal",
-    links: [
-      { label: "Privacy Policy", href: "#" },
-      { label: "Terms of Service", href: "#" },
-    ],
-  },
-];
-
-export function Footer() {
-  return (
-    <footer className="border-t border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)]">
-      <Container className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <Link to="/" className="flex items-center gap-2 font-display text-lg font-semibold text-neutral-50">
-            <ShieldCheck className="text-primary-400" size={20} />
-            {APP_NAME}
-          </Link>
-          <p className="mt-3 max-w-xs text-sm text-neutral-500">
-            Community-driven safety navigation, built for prevention, not reaction.
-          </p>
-        </div>
-
-        {FOOTER_LINKS.map((group) => (
-          <div key={group.heading}>
-            <h4 className="text-sm font-semibold text-neutral-200">{group.heading}</h4>
-            <ul className="mt-3 flex flex-col gap-2 list-none p-0 m-0 text-left">
-              {group.links.map((link) => (
-                <li key={link.label} className="p-0 m-0 text-left">
-                  <a href={link.href} className="text-sm text-neutral-500 hover:text-neutral-200">
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
+      heading: "Company",
+      links: [
+        { label: "About", href: "/#about" },
+        { label: "Contact", href: "mailto:hello@nirbhaya.ai" },
+      ],
+    },
+    {
+      heading: "Legal",
+      links: [
+        { label: "Privacy Policy", href: "#" },
+        { label: "Terms of Service", href: "#" },
+      ],
+    },
+  ];
+  
+  export function Footer() {
+    return (
+      <footer className="border-t border-[var(--color-border-subtle)] bg-[var(--color-neutral-900)]">
+        <Container className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <Link to="/" className="flex items-center gap-2 font-display text-lg font-semibold text-neutral-50">
+              <ShieldCheck className="text-primary-500" size={20} />
+              {APP_NAME}
+            </Link>
+            <p className="mt-3 max-w-xs text-sm text-neutral-200">
+              Community-driven safety navigation, built for prevention, not reaction.
+            </p>
           </div>
-        ))}
-      </Container>
-      <div className="border-t border-[var(--color-border-subtle)] py-6 text-center text-xs text-neutral-600">
-        © {new Date().getFullYear()} {APP_NAME}. All rights reserved.
-      </div>
-    </footer>
-  );
-}
+  
+          {FOOTER_LINKS.map((group) => (
+            <div key={group.heading}>
+              <h4 className="text-sm font-semibold text-neutral-100">{group.heading}</h4>
+              <ul className="mt-3 flex flex-col gap-2 list-none p-0 m-0 text-left">
+                {group.links.map((link) => (
+                  <li key={link.label} className="p-0 m-0 text-left">
+                    <a href={link.href} className="text-sm text-neutral-200 hover:text-primary-600 transition-colors">
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </Container>
+        <div className="border-t border-[var(--color-border-subtle)] py-6 text-center text-xs text-neutral-300">
+          © {new Date().getFullYear()} {APP_NAME}. All rights reserved.
+        </div>
+      </footer>
+    );
+  }
