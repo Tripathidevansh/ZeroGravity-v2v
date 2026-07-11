@@ -36,8 +36,8 @@ This is what women's safety technology should feel like: proactive, not reactive
 
 ## Important Links
 
-- **Live Deployment Link:** [Insert URL here]
-- **Demo Video Link:** [Insert YouTube/Drive URL here]
+- **Live Deployment Link:** https://nirbhayaai.vercel.app/
+- **Demo Video Link:** https://drive.google.com/file/d/1IO_R3jPQAGnG5EIG9QfIPVUQTVGntZiV/view?usp=drivesdk
 
 ---
 
@@ -81,7 +81,7 @@ This is what women's safety technology should feel like: proactive, not reactive
 **AI Tools**
 - **Google Gemini** — integrated in-product via a Supabase Edge Function, generating real-time natural-language safety explanations for recommended routes.
 - **Web Speech API** — native, on-device voice keyword detection powering hands-free SOS — no external speech-recognition API, nothing leaves the device until a real emergency is confirmed.
-- **Claude & Antigravity** — used as AI pair-programmers throughout the entire build, from initial architecture through backend integration, feature development, and dedicated QA/security audit passes (see Documentation below).
+- **Antigravity** — dedicated QA/security audit passes (see Documentation below).
 
 **Communications** — Resend (transactional emergency email delivery)
 
