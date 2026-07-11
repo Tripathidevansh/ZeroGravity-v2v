@@ -1,146 +1,128 @@
-# Nirbhaya AI
+<div align="center">
 
-**The Idea:** Every navigation app in the world optimizes for one thing — speed. They tell you the fastest route. But for millions of women travelling alone — on late-night commutes, through unfamiliar streets, in poorly-lit areas — the question that actually matters is never answered: *is this route safe?* Nirbhaya AI answers that question. It is a full-stack, community-driven women's safety platform that scores every route by a real, deterministic **Women Safety Index (WSI)** — computed from live community incident reports and verified nearby infrastructure — and wraps it in a complete real-time emergency response system that activates with one tap, one spoken word, or automatically when the user cannot reach their phone.
+# 🛡️ Nirbhaya AI
+
+### *The safest route matters as much as the fastest one.*
+
+**A community-driven women's safety navigation platform with real-time emergency response, voice-activated SOS, silent evidence capture, and live trusted-contact tracking.**
+
+*Built for IEEE SHE Aspire — SafeSphere Track*
+
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Supabase](https://img.shields.io/badge/Supabase-Backend-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
+[![Mapbox](https://img.shields.io/badge/Mapbox-GL%20JS-000000?logo=mapbox&logoColor=white)](https://mapbox.com)
+[![Gemini](https://img.shields.io/badge/Gemini-AI-8E75B2?logo=googlegemini&logoColor=white)](https://ai.google.dev)
+[![Resend](https://img.shields.io/badge/Resend-Email-000000?logo=resend&logoColor=white)](https://resend.com)
+
+</div>
+
+---
+
+## The Idea
+
+In India, and everywhere, women make a calculation that no navigation app has ever answered: not *"what's the fastest way there,"* but *"what's the safest way there."* A dark shortcut. An isolated stretch. A street with a history no map shows. That decision is made silently, on instinct, every single day — because the tools that exist optimize for speed, never for safety.
+
+**Nirbhaya AI closes that gap.**
+
+Named for the resolve that followed one of India's most painful reminders of why women's safety cannot be an afterthought, Nirbhaya AI is a community-driven safety navigation platform built on a simple conviction: **prevention, not reaction.** Instead of helping after something has already gone wrong, it helps a woman avoid the unsafe situation in the first place — and if the worst still happens, it responds for her, in real time, without requiring her to make a single extra decision under pressure.
+
+Every route is scored by a real, deterministic **Women Safety Index (WSI)**, computed from live community incident reports and verified nearby infrastructure — not guesswork, not a black box. And when a real emergency happens, the platform doesn't just log it — it **captures her exact location and context, silently photographs her surroundings as evidence, emails every trusted contact instantly, and hands them a live, no-login map to watch over her until she's safe** — activated by a single tap, or, hands-free, by a single spoken word.
+
+This is what women's safety technology should feel like: proactive, not reactive.
 
 ---
 
 ## Important Links
 
-- **Live Deployment Link:** https://nirbhayaai.vercel.app/
-- **Demo Video Link:** https://nirbhayaai.vercel.app/
+- **Live Deployment Link:** [Insert URL here]
+- **Demo Video Link:** [Insert YouTube/Drive URL here]
 
 ---
 
 ## Features
 
-- **Feature 1: Deterministic Women Safety Index (WSI) Engine** — A pure, explainable 0–100 safety score computed for any location from live community incident reports (weighted by severity × exponential time-decay) and proximity to verified police stations, hospitals, and safe public places. No machine learning. No randomness. Fully auditable — the same function powers every score across every screen.
+### 🧮 Before the Journey — Know Before You Go
+- **Women Safety Index (WSI) Engine** — a deterministic, fully explainable 0–100 safety score computed from real community reports (severity-weighted, time-decayed) and proximity to verified police, hospitals, and safe places. No black box, no randomness — the same score, color-coded green/amber/red, everywhere in the app.
+- **Safe Route Recommendation** — search any real destination via live Mapbox autocomplete; every candidate route is ranked by safety, not speed, with the safest route surfaced first.
+- **AI Route Explanation** — a Gemini-powered, plain-language explanation of *why* a route scored the way it did, so a safety score is something she can understand and trust, not just a number.
+- **Community Safety Reports** — categorized, severity-rated incident reports with photos and precise GPS, feeding directly into the WSI engine in real time, seeded with real-world report density across Delhi, Gurgaon, and Noida for a realistic demo.
 
-- **Feature 2: AI-Powered Safe Route Recommendation** — Users search any real destination via live Mapbox autocomplete. The system generates multiple candidate routes via the Mapbox Directions API, scores each by WSI, and ranks them safest-first — not fastest-first. The safest route is always at the top.
+### 🚶‍♀️ During the Journey — Never Alone
+- **Live Journey Mode** — real browser GPS tracking with a live-following map, live-recomputed safety score, live ETA, and remaining distance, updating continuously as she moves.
+- **Always-Visible SOS** — a red emergency button present on the dashboard and inline during an active journey, never more than one tap away.
 
-- **Feature 3: AI Route Explanation (Google Gemini)** — A Supabase Edge Function calls the Gemini API with the route's WSI score, incident categories, and nearby infrastructure count. It returns a 2–3 sentence, human-readable explanation of *why* a route scored the way it did — delivered directly in the Route Details view, in plain language the user can act on.
+### 🚨 In an Emergency — Real Response, Not a Panic Button
+- **One-Tap or Voice-Activated SOS** — activate by tapping the SOS button, or **hands-free by saying "help," "emergency," or "SOS"** — an always-on, on-device voice listener (no external API, fully private) detects the trigger and surfaces a **10-second cancellable countdown** before activating, guarding against false alarms while still enabling instant, hands-free activation in a real emergency.
+- **Complete Emergency Capture** — the instant SOS fires, the platform captures exact GPS coordinates, reverse-geocodes a human-readable address, reads device battery level, pulls in the active journey's route and destination, and identifies the nearest police station and hospital — all in one atomic, timestamped emergency record.
+- **Silent Evidence Capture** — without interrupting or alerting anyone nearby, the app silently captures a photo from the device camera at the moment of activation and securely uploads it to a private, per-user-locked evidence gallery.
+- **Real Emergency Emails** — every trusted contact with an email on file is instantly emailed via Resend — not a simulated toast — with her live location, a Google Maps link, current route and destination, safety score, battery level, and a live tracking link.
+- **Public Live Tracking Page** — trusted contacts open a secure, unique tracking link and watch her location move in real time, on any device, **with no account, no login, and no app install required.**
+- **Live Emergency Dashboard** — elapsed time, live GPS map, live safety index at her current position, distance remaining, full timeline of every action taken, per-contact email delivery status, the evidence photo gallery, tap-to-call emergency helplines, and one-tap resolution.
 
-- **Feature 4: Live Journey Mode with Real-Time GPS Tracking** — Users can start a tracked journey to any destination. The app continuously tracks GPS position, recomputes the WSI live at their current location, updates ETA and remaining distance in real time, and broadcasts live coordinates to Supabase Realtime so trusted contacts can follow along on a live map — all while the full SOS system remains one tap away.
-
-- **Feature 5: Emergency SOS System (One-Tap Activation)** — A single tap captures GPS coordinates, reverse-geocoded address, device battery level, current route context, and destination — creates a permanent, timestamped emergency record in the database, emails every trusted contact instantly with a live tracking link, and silently photographs the surroundings. The user is taken to a live Emergency Dashboard showing everything captured in real time.
-
-- **Feature 6: Voice-Activated SOS (Hands-Free, On-Device)** — A passive microphone listener powered by the browser's native Web Speech API runs continuously during use. Saying *"help", "help me", "emergency", "SOS",* or *"save me"* triggers a 10-second visual countdown before full SOS activation — giving the user a clear window to cancel a false alarm without disabling hands-free protection in a genuine emergency. No cloud speech API. No subscription. Fully on-device.
-
-- **Feature 7: SOS Camera Capture (Silent Evidence Photography)** — When SOS activates, the app silently opens the camera, captures a JPEG frame of the surroundings, closes the camera, and uploads the photo to a private Supabase Storage bucket. A metadata record (timestamp, GPS, trigger type, signed URL) is saved in the database. Photos appear in a full gallery with zoom and download on the Emergency Dashboard — automatic evidence capture that requires zero user action.
-
-- **Feature 8: Real Emergency Email Notifications (Resend)** — Not a simulation. Every trusted contact with an email on file receives a real transactional email containing the user's name, activation timestamp, reverse-geocoded address, Google Maps link, current destination, Women Safety Index, device battery level, and a one-click live tracking link — all via the Resend API through a Supabase Edge Function. Per-contact delivery status is recorded and shown on the Emergency Dashboard.
-
-- **Feature 9: Public Live Tracking Page (No Login Required)** — Trusted contacts who click the email link land on a live tracking page at `/track/<token>`. No Supabase account required. The page loads initial emergency context via a token-gated Edge Function and receives live location updates via Supabase Realtime Broadcast — watching the user move on a real Mapbox map in real time, until she's safe.
-
-- **Feature 10: Community Safety Reports** — Full incident reporting with category (harassment, poor lighting, unsafe area, suspicious activity, broken streetlight), severity (low/medium/high), photo upload, precise GPS coordinates, and description. Reports feed directly into the WSI engine — every new report immediately changes route scores for every user near that location. 80+ realistic seed reports across Delhi, Gurgaon, and Noida for realistic demo coverage.
-
-- **Feature 11: Trusted Contacts & Profile Management** — Users manage their profile and a personal list of trusted emergency contacts (name, relation, phone, email). Contacts with email addresses receive real SOS notifications. Contacts can be marked as primary emergency contacts.
-
-- **Feature 12: Fully Responsive, Production-Quality UI** — The entire application is responsive across desktops, laptops, tablets, Android phones, iPhones (including Dynamic Island models), and small phones down to 320px. Mobile users get a thumb-reachable bottom navigation bar with safe-area inset support for notch and home-indicator devices.
+### 👥 Trust & Community
+- **Trusted Contacts** — add contacts with phone and email, mark a primary emergency contact, manage who gets notified.
+- **Secure Authentication** — real Supabase Auth with persistent sessions and fully protected routes.
+- **Notifications Center** — SOS confirmations, nearby safety alerts, and AI-generated route insights in one place.
+- **Fully Responsive** — desktop, tablet, and mobile-first design, with thumb-reachable bottom navigation and safe-area support for notched devices.
+- **Offline Awareness** — the app detects connectivity loss and recovery and communicates it clearly rather than failing silently.
 
 ---
 
 ## Tech Stack & Tools
 
-**Frontend**
-- React 19, TypeScript 5, Vite 8 — modern, type-safe component architecture
-- Tailwind CSS v4 with a custom Stitch design system (Poppins + Quicksand typography, warm cream/pink Nirbhaya palette)
-- React Router v7 — client-side routing with protected routes
-- TanStack Query v5 — server state management, caching, and mutations
-- Framer Motion — page transitions and micro-animations
+**Frontend** — React 19 · TypeScript · Vite · Tailwind CSS v4 · React Router · TanStack Query · Framer Motion · Lucide Icons
 
-**Backend & Infrastructure**
-- Supabase Postgres — primary database with 9 tables, all protected by Row-Level Security (`auth.uid()` scoped)
-- Supabase Auth — email/password authentication with persistent sessions
-- Supabase Storage — two buckets: `community-reports` (public) and `sos-captures` (private, per-user RLS)
-- Supabase Realtime — Broadcast channels for anonymous live tracking + Postgres Changes for authenticated dashboard
-- Supabase Edge Functions (Deno runtime) — Gemini AI integration, Resend email delivery, public tracking API
+**Backend & Infrastructure** — Supabase (Postgres, Auth, Storage, Realtime, Edge Functions, Row-Level Security on every table)
 
-**Maps & Location**
-- Mapbox GL JS — interactive route maps with custom animated markers
-- Mapbox Directions API — multi-route generation
-- Mapbox Search Box API — live destination autocomplete + nearby place search (police, hospitals, pharmacies, metro, safe places)
-- Mapbox Geocoding API — reverse geocoding (GPS → human-readable address)
-- Browser Geolocation API — live GPS tracking (`watchPosition`)
+**Maps & Location** — Mapbox GL JS · Mapbox Directions API · Mapbox Search Box API · Mapbox Geocoding API · Browser Geolocation API · Battery Status API · MediaDevices (Camera) API
 
 **AI Tools**
-- **Google Gemini** — integrated in-product via a Supabase Edge Function to generate real-time, natural-language safety explanations for recommended routes. One stateless call per route. Deployed as `explain-route` Edge Function with the API key stored securely as a Supabase secret — never exposed to the client.
-- **Claude (Anthropic) / Antigravity AI** — used as an AI pair-programmer throughout the entire build: architecture design, database schema, RLS policy design, feature implementation, security auditing, and responsive layout work. Each feature was planned, implemented, and verified against a TypeScript build before moving to the next.
+- **Google Gemini** — integrated in-product via a Supabase Edge Function, generating real-time natural-language safety explanations for recommended routes.
+- **Web Speech API** — native, on-device voice keyword detection powering hands-free SOS — no external speech-recognition API, nothing leaves the device until a real emergency is confirmed.
+- **Claude & Antigravity** — used as AI pair-programmers throughout the entire build, from initial architecture through backend integration, feature development, and dedicated QA/security audit passes (see Documentation below).
 
-**Communications**
-- Resend — real transactional email delivery for emergency SOS alerts (not simulated)
-
-**Browser APIs**
-- Web Speech API — voice keyword detection (on-device, no cloud)
-- Battery Status API — device battery capture at SOS activation
-- MediaDevices API — silent SOS camera capture
+**Communications** — Resend (transactional emergency email delivery)
 
 ---
 
 ## Documentation
 
-### The Core Problem — and Why Existing Solutions Fall Short
+### How it works under the hood
 
-Navigation apps have solved speed. But speed and safety are not the same problem. A route that takes 3 minutes longer but avoids a poorly-lit street with a history of harassment incidents is categorically better for a woman travelling alone — and no mainstream navigation product surfaces that information. Community reports exist on platforms like Google Maps, but they are reviews, not structured safety signals. They cannot be aggregated into a live, per-route score. Nirbhaya AI is built entirely around the premise that **safety is a routing parameter**, not an afterthought.
+Nirbhaya AI is a single-page React application backed entirely by Supabase — no custom backend server to maintain. Code is organized by feature (`src/features/<feature>/{components,api,hooks}`), each owning its own Supabase queries, React Query hooks, and UI, on top of a shared design-system layer (buttons, cards, modals, the map view).
 
----
+**The Women Safety Index** (`src/services/wsiEngine.ts`) is a pure, deterministic function — the same one whether it's scoring the dashboard's "today's safety score," a candidate route, or a live position during an active journey. It finds nearby community reports, weights each by severity and applies exponential time-decay so recent incidents matter more than old ones, then offsets that against a proximity-weighted bonus from verified nearby police stations, hospitals, and safe places. No machine learning, no randomness — every score is explainable and reproducible from the same inputs.
 
-### Women Safety Index (WSI) Engine
+**Live nearby places** (police, hospitals, safe spots) and **destination search** both run through Mapbox's Search Box API in real time, centered on the user's actual GPS position — never a fixed, hardcoded list.
 
-The WSI is computed by a pure, deterministic TypeScript function (`src/services/wsiEngine.ts`) — no machine learning, no external API, no randomness. For any GPS coordinate, it:
+**The security model for public tracking** is the most deliberate architectural decision in the project. Every table is protected by row-level security scoped to `auth.uid()` — but a trusted contact who clicks an emergency email link has no Supabase session at all. Rather than weakening RLS with a broad "anyone can read" policy (which would leak every user's emergency data to any anonymous visitor), the tracking page is served through two narrowly-scoped mechanisms instead:
+- A **Supabase Edge Function** (`get-emergency-tracking`), deployed without JWT verification, using the service-role key internally but returning data for exactly one event — matched strictly by a dedicated, unguessable `tracking_token` kept separate from the event's primary key. A wrong or guessed token returns a generic "not found," never a partial match.
+- **Supabase Realtime Broadcast** (not table-level `postgres_changes`, which *is* RLS-gated) for the live-moving-location feed — a pub/sub channel keyed by the tracking token, so the anonymous page receives live position updates without either side ever being granted table read access.
 
-1. **Finds community reports within a set radius** and weights each by:
-   - Severity: `low = 1`, `medium = 2`, `high = 3`
-   - Exponential time-decay: `weight × e^(-λ × days_since_report)` — so a harassment report from last week matters far more than one from six months ago
-   - Proximity: reports closer to the point are penalised more heavily
+**Silent evidence capture** follows the same security discipline: photos live in a private storage bucket, gated by per-user RLS and a storage policy restricting uploads strictly to that user's own path prefix, served only via short-lived signed URLs — never a permanent public link.
 
-2. **Finds verified nearby infrastructure** (police stations, hospitals, safe public places) and applies a proportional safety bonus — more nearby infrastructure = lower effective risk
+**Voice-activated SOS** runs a continuous, on-device `SpeechRecognition` listener for trigger phrases ("help," "emergency," "SOS," "save me"). On a match, a visible 10-second countdown takes over — switching the listener to cancel phrases ("cancel," "stop," "false alarm") — before falling through to the exact same activation sequence the manual SOS button triggers, so there is only ever one emergency code path, not two to maintain and trust.
 
-3. **Normalises** both into a 0–100 score with a consistent colour system: 🟢 70+ (safe) · 🟡 40–69 (moderate) · 🔴 0–39 (high risk)
+### How AI tools were coordinated
 
-This same function — fed different coordinates — powers the dashboard's "today's score," each generated route's WSI, the live score during an active journey, and the live score on the Emergency Dashboard. One deterministic engine. Zero inconsistency.
+The application was built in structured phases with AI acting as an iterative pair-programmer, not a one-shot generator:
 
----
+1. **Architecture first** — folder structure, routing, design system, and component conventions were locked in before any business logic, so every later feature had a consistent foundation to extend rather than a reason to redesign.
+2. **Frontend against real user flow** — the complete UI was built and validated against realistic mock data (search → route recommendation → journey → reports → notifications → profile) before any backend existed, so the experience was right before it was wired up.
+3. **Backend integration, verified at every step** — mock data was systematically replaced with real Supabase tables, RLS policies, and the live WSI engine, with TypeScript compilation and production builds checked after every change rather than assumed.
+4. **Feature extension, incrementally** — Emergency SOS, voice activation, live GPS tracking, silent camera evidence capture, Resend email delivery, and the public tracking page were each added and verified against the existing architecture individually, rather than batched into one large, unreviewed change.
+5. **Dedicated QA and security audit passes** — specifically hunting for dead code, unused mock data, accessibility gaps, and the RLS-versus-public-access tension solved above, with every fix verified by re-running static checks rather than taken on faith.
 
-### Emergency SOS and the Public Tracking Page — The Security Model
-
-This is the most architecturally deliberate part of the system. Every table in the application is protected by Row-Level Security scoped to `auth.uid()`. But a trusted contact who clicks an emergency email link has no Supabase account. The naive solution — a `FOR ALL USING (true)` policy — would expose every user's emergency data to any anonymous visitor.
-
-Nirbhaya AI solves this without weakening RLS:
-
-- **A Supabase Edge Function** (`get-emergency-tracking`) is deployed without JWT verification and uses the service-role key internally, but returns data for **exactly one** emergency event — matched strictly by a `tracking_token` (a dedicated UUID separate from the event's primary key). An invalid or guessed token returns a generic 404. A valid token returns only that event's safe-to-share fields.
-
-- **Supabase Realtime Broadcast** (not `postgres_changes`, which *is* RLS-gated) is used for the live-moving-location feed. Broadcast channels are plain pub/sub — not tied to row-level permissions. The user's device publishes live coordinates on a channel named `emergency-location:<tracking_token>`. The anonymous tracking page subscribes to that exact channel — without either side ever being granted table-read access.
-
-The result: trusted contacts get a genuinely live, no-login tracking experience while the underlying security model remains exactly as strict as every other part of the application.
+Gemini, by contrast, is used purely as an **in-product feature** — one stateless call per route, not a conversational assistant — turning a route's safety data into a short explanation for the person actually relying on it.
 
 ---
 
-### Voice-Activated SOS — Design Decisions
+<div align="center">
 
-Building voice SOS with the browser's native Web Speech API introduced two significant engineering challenges:
+**Built with ❤️ for women's safety.**
 
-**Challenge 1 — False positives.** Triggering an SOS from ambient conversation ("can you help me find my keys?") would be worse than no voice SOS at all. The solution is a mandatory **10-second cancellation countdown** — a full-screen overlay with a large countdown timer, the exact phrase that was recognized, a Cancel button, and continued listening for cancel keywords ("stop", "cancel", "false alarm"). The countdown is long enough to cancel comfortably; the voice cancel option means the user doesn't even need to reach the phone.
+*Nirbhaya AI — because the safest route matters as much as the fastest one.*
 
-**Challenge 2 — Browser timeout.** Chrome's `SpeechRecognition` engine stops after ~60 seconds of silence. The `onend` handler auto-restarts recognition whenever Voice SOS is enabled and a countdown is not in progress — creating continuous, uninterrupted coverage with no user action.
-
-**Challenge 3 — Multiple activation paths share one camera service.** The SOS button and the voice countdown are in different parts of the component tree. A React hook-per-instance approach (what was built first) resulted in disconnected `MediaStream` references — the camera never captured anything. The solution was a **module-level singleton** (`src/services/sosCameraService.ts`) that holds one permission state and one stream lifecycle for the entire application — shared correctly across both activation paths.
-
----
-
-### How AI Tools Were Coordinated
-
-**Google Gemini** is used purely as an in-product feature — a single, stateless call per route that turns a route's WSI score, incident categories, and infrastructure context into a short, human-readable explanation for the user. It is not used for app logic, routing, or data processing.
-
-**Claude (Anthropic) / Antigravity AI** was used as a structured AI pair-programmer across five development phases:
-
-1. **Architecture phase** — folder structure, routing conventions, design system tokens, and component contracts were locked before any business logic, so every subsequent feature had a consistent foundation to extend rather than redesign.
-
-2. **Frontend phase** — the complete UI was built against realistic mock data to validate the full user flow (search → route recommendation → journey → reports → notifications → profile → emergency) before any backend existed. This caught UX problems early, before they were entangled with database logic.
-
-3. **Backend integration phase** — mock data was systematically replaced with real Supabase tables, RLS policies, and the WSI engine. TypeScript compilation and production builds (`tsc -b && vite build`) were run after every integration step — not at the end — so regressions were caught immediately.
-
-4. **Feature extension phase** — Emergency SOS, voice SOS, live GPS tracking, SOS camera capture, Resend email delivery, and the public tracking page were each planned and verified against the existing codebase before implementation began. Each feature was verified with a clean build before moving to the next.
-
-5. **QA and security audit phase** — dedicated review passes for dead code, unused mock data, broken permission models (the public tracking page RLS tension), accessibility gaps, and responsive layout regressions on mobile devices.
-
-The combination of Gemini (in-product intelligence) and Claude (development intelligence) reflects a deliberate choice: use AI for what it is actually good at, in the layer where it adds the most value.
+</div>
